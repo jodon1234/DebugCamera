@@ -65,7 +65,7 @@ def setup():
         #FG Color #d6d6d6
         pi_addr_entry = customtkinter.CTkEntry(
             master=window,
-            placeholder_text="Cam Address",
+            placeholder_text="NOT WORKING",
             placeholder_text_color="#454545",
             font=("Arial", 14),
             text_color="#000000",
@@ -97,7 +97,7 @@ def setup():
 
         subnet_entry = customtkinter.CTkEntry(
             master=window,
-            placeholder_text="SUBNET MASK",
+            placeholder_text="NOT WORKING",
             placeholder_text_color="#454545",
             font=("Arial", 14),
             text_color="#000000",
@@ -113,7 +113,7 @@ def setup():
 
         gateway_entry = customtkinter.CTkEntry(
             master=window,
-            placeholder_text="DEFAULT GATEWAY",
+            placeholder_text="NOT WORKING",
             placeholder_text_color="#454545",
             font=("Arial", 14),
             text_color="#000000",

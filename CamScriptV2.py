@@ -294,16 +294,16 @@ if setup_req:
 if input_mode == 3:
     #Set ethernet configuration
     print("Applying config...")
-    subprocess.run(['sudo','ifconfig', 'eth0', 'down'], stdout = subprocess.DEVNULL)
-    time.sleep(2)
-    subprocess.run(['sudo','ifconfig', 'eth0', PI_IP], stdout = subprocess.DEVNULL)
-    subprocess.run(['sudo','ifconfig', 'eth0', 'netmask', SUBNET], stdout = subprocess.DEVNULL)
-    subprocess.run(['sudo', 'ip','route', 'del', 'default', 'eth0'], stdout = subprocess.DEVNULL)
-    time.sleep(1)
-    subprocess.run(['sudo', 'ip', 'route', 'add', 'default', 'via', GATEWAY, 'dev', 'eth0'], stdout = subprocess.DEVNULL)
-    time.sleep(2)
-    subprocess.run(['sudo','ifconfig', 'eth0', 'up'], stdout = subprocess.DEVNULL)
-    time.sleep(1)
+    #subprocess.run(['sudo','ifconfig', 'eth0', 'down'], stdout = subprocess.DEVNULL)
+    #time.sleep(2)
+    #subprocess.run(['sudo','ifconfig', 'eth0', PI_IP], stdout = subprocess.DEVNULL)
+    #subprocess.run(['sudo','ifconfig', 'eth0', 'netmask', SUBNET], stdout = subprocess.DEVNULL)
+    #subprocess.run(['sudo', 'ip','route', 'del', 'default', 'eth0'], stdout = subprocess.DEVNULL)
+    #time.sleep(1)
+    #subprocess.run(['sudo', 'ip', 'route', 'add', 'default', 'via', GATEWAY, 'dev', 'eth0'], stdout = subprocess.DEVNULL)
+    #time.sleep(2)
+    #subprocess.run(['sudo','ifconfig', 'eth0', 'up'], stdout = subprocess.DEVNULL)
+    #time.sleep(1)
 
 # Start Camera
 GPIO.setmode(GPIO.BCM)
@@ -320,8 +320,9 @@ vconfig = picam2.create_video_configuration()
 vconfig['controls']['FrameDurationLimits'] = (micro, micro)
 picam2.configure(vconfig)
 encoder = H264Encoder()
-output = CircularOutput(buffersize=int(fps * (dur + 0.2)), outputtofile=False)
-picam2.start_recording(encoder)
+encoder.output = CircularOutput(buffersize=int(fps * (dur + 0.2)), outputtofile=False)
+picam2.start()
+picam2.start_encoder(encoder)
 
 def main():
     global cam_start
@@ -332,7 +333,7 @@ def main():
             current_datetime = datetime.now().strftime("%Y-%d_%H-%M-%S")
             TempName="Temp" + ".h264"
             output.fileoutput = TempName
-            picam2.start_recording(output)
+            encoder.output.start()
             print(f"Cam Started")
             cam_start = False
         with LogixDriver(PLC_IP) as plc:
@@ -344,8 +345,7 @@ def main():
             if response.value == 1:
                   response = 0
                   plc.write('Cam1.Busy', 1)
-                  output.stop()
-                  picam2.stop_recording()
+                  encoder.output.stop()
                   print(f"Converting file to .MP4")
                   print(TempName)
                   time.sleep(2)
@@ -364,13 +364,12 @@ def main():
             TempName="Temp" + ".h264"
             output.fileoutput = TempName
             print(f"Cam Started")
-            picam2.start_recording(encoder, output)
+            encoder.output.start()
             cam_start = False
         trigger = GPIO.input(17)
         if trigger:
             response = 0
-            output.stop()
-            picam2.stop_recording()
+            encoder.output.stop()
             print(f"Converting file to .MP4")
             print(TempName)
             time.sleep(2)
@@ -386,13 +385,12 @@ def main():
             TempName="Temp" + ".h264"
             output.fileoutput = TempName
             print(f"Cam Started")
-            picam2.start_recording(encoder, output)
+            encoder.output.start()
             cam_start = False
         trigger = GPIO.input(4)
         if trigger:
             response = 0
-            output.stop()
-            picam2.stop_recording()
+            encoder.output.stop()
             print(f"Converting file to .MP4")
             print(TempName)
             time.sleep(2)

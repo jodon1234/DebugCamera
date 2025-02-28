@@ -332,7 +332,7 @@ def main():
         if cam_start:
             current_datetime = datetime.now().strftime("%Y-%d_%H-%M-%S")
             TempName="Temp" + ".h264"
-            output.fileoutput = TempName
+            encoder.output.fileoutput = TempName
             encoder.output.start()
             print(f"Cam Started")
             cam_start = False
@@ -362,7 +362,7 @@ def main():
         if cam_start:
             current_datetime = datetime.now().strftime("%Y-%d_%H-%M-%S")
             TempName="Temp" + ".h264"
-            output.fileoutput = TempName
+            encoder.output.fileoutput = TempName
             print(f"Cam Started")
             encoder.output.start()
             cam_start = False
@@ -383,7 +383,7 @@ def main():
         if cam_start:
             current_datetime = datetime.now().strftime("%Y-%d_%H-%M-%S")
             TempName="Temp" + ".h264"
-            output.fileoutput = TempName
+            encoder.output.fileoutput = TempName
             print(f"Cam Started")
             encoder.output.start()
             cam_start = False

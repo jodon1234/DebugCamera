@@ -5,7 +5,8 @@ import customtkinter
 import signal
 import time
 import RPi.GPIO as GPIO
-from picamera2 import Picamera2, Preview, Controls
+from libcamera import controls
+from picamera2 import Picamera2, Preview
 from picamera2.encoders import H264Encoder
 from picamera2.outputs import CircularOutput, FfmpegOutput
 from datetime import datetime
@@ -63,6 +64,7 @@ def setup():
         radio_var = IntVar()
         #BG Color #ffffff
         #FG Color #d6d6d6
+        #FG Color #68da7b
         pi_addr_entry = customtkinter.CTkEntry(
             master=window,
             placeholder_text="NOT WORKING",
@@ -77,7 +79,7 @@ def setup():
             bg_color="#ffffff",
             fg_color="#d6d6d6",
             )
-        pi_addr_entry.place(x=10, y=30)
+        pi_addr_entry.place(x=10, y=210)
 
         plc_addr_entry = customtkinter.CTkEntry(
             master=window,
@@ -91,9 +93,9 @@ def setup():
             corner_radius=6,
             border_color="#000000",
             bg_color="#ffffff",
-            fg_color="#d6d6d6",
+            fg_color="#ffffff",
             )
-        plc_addr_entry.place(x=10, y=210)
+        plc_addr_entry.place(x=10, y=30)
 
         subnet_entry = customtkinter.CTkEntry(
             master=window,
@@ -139,7 +141,7 @@ def setup():
             corner_radius=6,
             border_color="#000000",
             bg_color="#ffffff",
-            fg_color="#d6d6d6",
+            fg_color="#ffffff",
             )
         pre_trig_time.place(x=200, y=270)
 
@@ -172,7 +174,7 @@ def setup():
             corner_radius=6,
             border_color="#000000",
             bg_color="#ffffff",
-            fg_color="#d6d6d6",
+            fg_color="#68da7b",
             command=done_pressed
             )
         done_button.place(x=130, y=340)
@@ -188,7 +190,7 @@ def setup():
             bg_color="#ffffff",
             fg_color="#ffffff",
             )
-        cam_ADDR_label.place(x=10, y=0)
+        cam_ADDR_label.place(x=10, y=180)
 
         PLC_ADDR_label = customtkinter.CTkLabel(
             master=window,
@@ -201,7 +203,7 @@ def setup():
             bg_color="#ffffff",
             fg_color="#ffffff",
             )
-        PLC_ADDR_label.place(x=10, y=180)
+        PLC_ADDR_label.place(x=10, y=0)
 
         subnet_label = customtkinter.CTkLabel(
             master=window,
@@ -249,7 +251,7 @@ def setup():
             text="Internal",
             text_color="#000000",
             border_color="#000000",
-            fg_color="#d6d6d6",
+            fg_color="#68da7b",
             hover_color="#2F2F2F",
             command=internal_sel
             )
@@ -262,7 +264,7 @@ def setup():
             text="External",
             text_color="#000000",
             border_color="#000000",
-            fg_color="#d6d6d6",
+            fg_color="#68da7b",
             hover_color="#2F2F2F",
             command=external_sel
             )
@@ -275,7 +277,7 @@ def setup():
             text="Ethernet",
             text_color="#000000",
             border_color="#000000",
-            fg_color="#d6d6d6",
+            fg_color="#68da7b",
             hover_color="#2F2F2F",
             command=ethernet_sel
             )
@@ -309,16 +311,16 @@ if input_mode == 3:
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(4, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-picam2 = Picamera2()
-picam2.start_preview(Preview.QTGL)
-preview_config = picam2.create_preview_configuration()
-picam2.configure(preview_config)
 dur = pre_time
 fps = 30
+fpsSTR = str(fps)
+picam2 = Picamera2()
+picam2.start_preview(Preview.QTGL)
+preview_config = picam2.create_preview_configuration(main={"size": (640, 480)}, controls={'FrameRate': 15})
+picam2.configure(preview_config)
 micro = int((1 / fps) * 1000000)
-vconfig = picam2.create_video_configuration()
-vconfig['controls']['FrameDurationLimits'] = (micro, micro)
-picam2.configure(vconfig)
+video_config = picam2.create_video_configuration(main={"size": (1920, 1080)}, controls={'FrameRate': fps})
+picam2.configure(video_config)
 encoder = H264Encoder()
 encoder.output = CircularOutput(buffersize=int(fps * (dur + 0.2)), outputtofile=False)
 picam2.start()
@@ -330,42 +332,49 @@ def main():
     # Ethernet Trigger
     while input_mode == 3:
         if cam_start:
-            current_datetime = datetime.now().strftime("%Y-%d_%H-%M-%S")
+            current_datetime = datetime.now().strftime("%Y-%m-%d-%H.%M.%S")
             TempName="Temp" + ".h264"
             encoder.output.fileoutput = TempName
             encoder.output.start()
             print(f"Cam Started")
             cam_start = False
-        with LogixDriver(PLC_IP) as plc:
-            # Read the tag that indicates the command from the PLC
-            response = plc.read('Cam1.Trigger_OUT')
-            heartbeat = plc.read('Cam1.Heartbeat_OUT')
-            plc.write('Cam1.Heartbeat_IN', heartbeat.value)
-            print(heartbeat)
-            if response.value == 1:
-                  response = 0
-                  plc.write('Cam1.Busy', 1)
-                  encoder.output.stop()
-                  print(f"Converting file to .MP4")
-                  print(TempName)
-                  time.sleep(2)
-                  cmd = 'ffmpeg -r 30 -i ' + TempName + ' -c copy ' + current_datetime +'.mp4'
-                  os.system(cmd)
-                  time.sleep(10)
-                  plc.write('Cam1.Done', 1)
-                  plc.write('Cam1.Trigger_OUT', 0)
-                  plc.write('Cam1.Busy', 0)
-                  print(f"Done")
-                  cam_start = True
+            picam2.set_controls({"AfMode": controls.AfModeEnum.Continuous})
+        try:
+            with LogixDriver(PLC_IP) as plc:
+                # Read the tag that indicates the command from the PLC
+                response = plc.read('Cam1.Trigger_OUT')
+                heartbeat = plc.read('Cam1.Heartbeat_OUT')
+                plc.write('Cam1.Heartbeat_IN', heartbeat.value)
+                print(heartbeat)
+                if response.value == 1:
+                    response = 0
+                    plc.write('Cam1.Busy', 1)
+                    encoder.output.stop()
+                    print(f"Converting file to .MP4")
+                    print(TempName)
+                    time.sleep(2)
+                    cmd = 'ffmpeg -r '+ fpsSTR + ' -i ' + TempName + ' -c copy ' + current_datetime +'.mp4'
+                    print(cmd)
+                    os.system(cmd)
+                    time.sleep(10)
+                    plc.write('Cam1.Done', 1)
+                    plc.write('Cam1.Trigger_OUT', 0)
+                    plc.write('Cam1.Busy', 0)
+                    print(f"Done")
+                    cam_start = True
+        except:
+            print(f"Connection lost, retrying...")
+            time.sleep(5)
     #Internal Trigger
     while input_mode == 2:
         if cam_start:
-            current_datetime = datetime.now().strftime("%Y-%d_%H-%M-%S")
+            current_datetime = datetime.now().strftime("%Y-%m-%d-%H.%M.%S")
             TempName="Temp" + ".h264"
             encoder.output.fileoutput = TempName
             print(f"Cam Started")
             encoder.output.start()
             cam_start = False
+            picam2.set_controls({"AfMode": controls.AfModeEnum.Continuous})
         trigger = GPIO.input(17)
         if trigger:
             response = 0
@@ -373,7 +382,8 @@ def main():
             print(f"Converting file to .MP4")
             print(TempName)
             time.sleep(2)
-            cmd = 'ffmpeg -r 30 -i ' + TempName + ' -c copy ' + current_datetime +'.mp4'
+            cmd = 'ffmpeg -r '+ fpsSTR + ' -i ' + TempName + ' -c copy ' + current_datetime +'.mp4'
+            print(cmd)
             os.system(cmd)
             time.sleep(10)
             print(f"Done")
@@ -381,12 +391,13 @@ def main():
     #External Trigger
     while input_mode == 1:
         if cam_start:
-            current_datetime = datetime.now().strftime("%Y-%d_%H-%M-%S")
+            current_datetime = datetime.now().strftime("%Y-%m-%d-%H.%M.%S")
             TempName="Temp" + ".h264"
             encoder.output.fileoutput = TempName
             print(f"Cam Started")
             encoder.output.start()
             cam_start = False
+            picam2.set_controls({"AfMode": controls.AfModeEnum.Continuous})
         trigger = GPIO.input(4)
         if trigger:
             response = 0
@@ -394,7 +405,8 @@ def main():
             print(f"Converting file to .MP4")
             print(TempName)
             time.sleep(2)
-            cmd = 'ffmpeg -r 30 -i ' + TempName + ' -c copy ' + current_datetime +'.mp4'
+            cmd = 'ffmpeg -r '+ fpsSTR + ' -i ' + TempName + ' -c copy ' + current_datetime +'.mp4'
+            print(cmd)
             os.system(cmd)
             time.sleep(10)
             print(f"Done")

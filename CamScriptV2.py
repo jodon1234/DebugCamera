@@ -315,8 +315,8 @@ dur = pre_time
 fps = 30
 fpsSTR = str(fps)
 picam2 = Picamera2()
-picam2.start_preview(Preview.QTGL)
 preview_config = picam2.create_preview_configuration(main={"size": (640, 480)}, controls={'FrameRate': 15})
+picam2.start_preview(Preview.QTGL)
 picam2.configure(preview_config)
 micro = int((1 / fps) * 1000000)
 video_config = picam2.create_video_configuration(main={"size": (1920, 1080)}, controls={'FrameRate': fps})

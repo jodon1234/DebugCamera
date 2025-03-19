@@ -15,7 +15,7 @@ print(f"Starting...")
 cam_start = True
 setup_req = True
 input_mode = 0
-# Define the IP address of the PLC
+# Define the IP address of the PLCcc
 PLC_IP = '192.168.2.10'
 PI_IP = '192.168.2.248'
 SUBNET = '255.255.255.0'

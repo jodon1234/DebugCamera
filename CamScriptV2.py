@@ -15,7 +15,7 @@ print(f"Starting...")
 cam_start = True
 setup_req = True
 input_mode = 0
-# Define the IP address of the PLCcc
+# Define the IP address of the PLC
 PLC_IP = '192.168.2.10'
 PI_IP = '192.168.2.248'
 SUBNET = '255.255.255.0'
@@ -348,12 +348,17 @@ def main():
                 print(heartbeat)
                 if response.value == 1:
                     response = 0
+                    PLC_filename_enable = plc.read('Cam1.PLC_Filename_EN')
                     plc.write('Cam1.Busy', 1)
                     encoder.output.stop()
                     print(f"Converting file to .MP4")
                     print(TempName)
                     time.sleep(2)
-                    cmd = 'ffmpeg -r '+ fpsSTR + ' -i ' + TempName + ' -c copy ' + current_datetime +'.mp4'
+                    if PLC_filename_enable:
+                        filename = plc.read('Cam1.Filename')
+                    if not PLC_filename_enable:
+                        filename = current_datetime
+                    cmd = 'ffmpeg -r '+ fpsSTR + ' -i ' + TempName + ' -c copy ' + filename +'.mp4'
                     print(cmd)
                     os.system(cmd)
                     time.sleep(10)

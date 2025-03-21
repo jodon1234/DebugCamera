@@ -396,6 +396,7 @@ def main():
                         filename = plc.read(cam_name + ".Filename")
                     if not PLC_filename_enable:
                         filename = current_datetime
+                    print(filename + ".mp4")
                     cmd = 'ffmpeg -r '+ fpsSTR + ' -i ' + TempName + ' -c copy ' + filename +'.mp4'
                     print(cmd)
                     os.system(cmd)

@@ -24,7 +24,7 @@ PI_IP = '192.168.2.248'
 SUBNET = '255.255.255.0'
 GATEWAY = '192.168.1.1'
 pre_time = 90
-
+cam_name = 'Cam1'
 def setup():
     while setup_req:
 
@@ -53,11 +53,13 @@ def setup():
                 global SUBNET
                 global GATEWAY
                 global pre_time
+                global cam_name
                 setup_req = False
                 PLC_IP = plc_addr_entry.get()
-                PI_IP = pi_addr_entry.get()
-                SUBNET = subnet_entry.get()
-                GATEWAY = gateway_entry.get()
+                cam_name = cam_name_entry.get()
+                #PI_IP = pi_addr_entry.get()
+                #SUBNET = subnet_entry.get()
+                #GATEWAY = gateway_entry.get()
                 pre_timestr = pre_trig_time.get()
                 pre_time = int(pre_timestr)
                 print("Done")
@@ -102,7 +104,7 @@ def setup():
 
         cam_name_entry = customtkinter.CTkEntry(
             master=window,
-            placeholder_text="Camera Name",
+            placeholder_text="Same as in PLC",
             placeholder_text_color="#454545",
             font=("Arial", 14),
             text_color="#000000",
@@ -340,6 +342,7 @@ if input_mode == 3:
     #time.sleep(1)
 
 # Start Camera
+print(cam_name + ".Busy")
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(4, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
@@ -374,29 +377,29 @@ def main():
         try:
             with LogixDriver(PLC_IP) as plc:
                 # Read the tag that indicates the command from the PLC
-                response = plc.read('Cam1.Trigger_OUT')
-                heartbeat = plc.read('Cam1.Heartbeat_OUT')
-                plc.write('Cam1.Heartbeat_IN', heartbeat.value)
+                response = plc.read(cam_name + ".Trigger_OUT")
+                heartbeat = plc.read(cam_name + ".Heartbeat_OUT")
+                plc.write(cam_name + ".Heartbeat_IN", heartbeat.value)
                 print(heartbeat)
                 if response.value == 1:
                     response = 0
-                    PLC_filename_enable = plc.read('Cam1.PLC_Filename_EN')
-                    plc.write('Cam1.Busy', 1)
+                    PLC_filename_enable = plc.read(cam_name + ".PLC_Filename_EN")
+                    plc.write(cam_name + ".Busy", 1)
                     encoder.output.stop()
                     print(f"Converting file to .MP4")
                     print(TempName)
                     time.sleep(2)
                     if PLC_filename_enable:
-                        filename = plc.read('Cam1.Filename')
+                        filename = plc.read(cam_name + ".Filename")
                     if not PLC_filename_enable:
                         filename = current_datetime
                     cmd = 'ffmpeg -r '+ fpsSTR + ' -i ' + TempName + ' -c copy ' + filename +'.mp4'
                     print(cmd)
                     os.system(cmd)
                     time.sleep(10)
-                    plc.write('Cam1.Done', 1)
-                    plc.write('Cam1.Trigger_OUT', 0)
-                    plc.write('Cam1.Busy', 0)
+                    plc.write(cam_name + ".Done", 1)
+                    plc.write(cam_name + ".Trigger_OUT", 0)
+                    plc.write(cam_name + ".Busy", 0)
                     print(f"Done")
                     cam_start = True
         except:

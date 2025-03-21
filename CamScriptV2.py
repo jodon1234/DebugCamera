@@ -1,16 +1,19 @@
-import os
-import subprocess
-from tkinter import *
-import customtkinter
-import signal
-import time
-import RPi.GPIO as GPIO
-from libcamera import controls
-from picamera2 import Picamera2, Preview
-from picamera2.encoders import H264Encoder
-from picamera2.outputs import CircularOutput, FfmpegOutput
-from datetime import datetime
-from pycomm3 import LogixDriver
+try:
+    import os
+    import subprocess
+    from tkinter import *
+    import customtkinter
+    import signal
+    import time
+    import RPi.GPIO as GPIO
+    from libcamera import controls
+    from picamera2 import Picamera2, Preview
+    from picamera2.encoders import H264Encoder
+    from picamera2.outputs import CircularOutput, FfmpegOutput
+    from datetime import datetime
+    from pycomm3 import LogixDriver
+except:
+    print("Error importing libraries. Ensure all required libraries are installed.")
 print(f"Starting...")
 cam_start = True
 setup_req = True
@@ -65,21 +68,21 @@ def setup():
         #BG Color #ffffff
         #FG Color #d6d6d6
         #FG Color #68da7b
-        pi_addr_entry = customtkinter.CTkEntry(
-            master=window,
-            placeholder_text="NOT WORKING",
-            placeholder_text_color="#454545",
-            font=("Arial", 14),
-            text_color="#000000",
-            height=30,
-            width=195,
-            border_width=2,
-            corner_radius=6,
-            border_color="#000000",
-            bg_color="#ffffff",
-            fg_color="#d6d6d6",
-            )
-        pi_addr_entry.place(x=10, y=210)
+        ##pi_addr_entry = customtkinter.CTkEntry(
+        ##    master=window,
+        ##    placeholder_text="NOT WORKING",
+        ##    placeholder_text_color="#454545",
+        ##    font=("Arial", 14),
+        ##    text_color="#000000",
+        ##    height=30,
+        ##    width=195,
+        ##    border_width=2,
+        ##    corner_radius=6,
+        ##    border_color="#000000",
+        ##    bg_color="#ffffff",
+        ##    fg_color="#d6d6d6",
+        ##    )
+        ##pi_addr_entry.place(x=10, y=210)
 
         plc_addr_entry = customtkinter.CTkEntry(
             master=window,
@@ -97,9 +100,9 @@ def setup():
             )
         plc_addr_entry.place(x=10, y=30)
 
-        subnet_entry = customtkinter.CTkEntry(
+        cam_name_entry = customtkinter.CTkEntry(
             master=window,
-            placeholder_text="NOT WORKING",
+            placeholder_text="Camera Name",
             placeholder_text_color="#454545",
             font=("Arial", 14),
             text_color="#000000",
@@ -109,25 +112,41 @@ def setup():
             corner_radius=6,
             border_color="#000000",
             bg_color="#ffffff",
-            fg_color="#d6d6d6",
+            fg_color="#ffffff",
             )
-        subnet_entry.place(x=10, y=90)
+        cam_name_entry.place(x=10, y=90)
 
-        gateway_entry = customtkinter.CTkEntry(
-            master=window,
-            placeholder_text="NOT WORKING",
-            placeholder_text_color="#454545",
-            font=("Arial", 14),
-            text_color="#000000",
-            height=30,
-            width=195,
-            border_width=2,
-            corner_radius=6,
-            border_color="#000000",
-            bg_color="#ffffff",
-            fg_color="#d6d6d6",
-            )
-        gateway_entry.place(x=10, y=150)
+        ##subnet_entry = customtkinter.CTkEntry(
+        ##    master=window,
+        ##    placeholder_text="NOT WORKING",
+        ##    placeholder_text_color="#454545",
+        ##    font=("Arial", 14),
+        ##    text_color="#000000",
+        ##    height=30,
+        ##    width=195,
+        ##    border_width=2,
+        ##    corner_radius=6,
+        ##    border_color="#000000",
+        ##    bg_color="#ffffff",
+        ##    fg_color="#d6d6d6",
+        ##    )
+        ##subnet_entry.place(x=10, y=90)
+
+        ##gateway_entry = customtkinter.CTkEntry(
+        ##    master=window,
+        ##    placeholder_text="NOT WORKING",
+        ##    placeholder_text_color="#454545",
+        ##    font=("Arial", 14),
+        ##    text_color="#000000",
+        ##    height=30,
+        ##    width=195,
+        ##    border_width=2,
+        ##    corner_radius=6,
+        ##    border_color="#000000",
+        ##    bg_color="#ffffff",
+        ##    fg_color="#d6d6d6",
+        ##    )
+        ##gateway_entry.place(x=10, y=150)
 
         pre_trig_time = customtkinter.CTkEntry(
             master=window,
@@ -179,18 +198,18 @@ def setup():
             )
         done_button.place(x=130, y=340)
 
-        cam_ADDR_label = customtkinter.CTkLabel(
-            master=window,
-            text="CAM ADDR",
-            font=("Arial", 14),
-            text_color="#000000",
-            height=30,
-            width=95,
-            corner_radius=0,
-            bg_color="#ffffff",
-            fg_color="#ffffff",
-            )
-        cam_ADDR_label.place(x=10, y=180)
+        ##cam_ADDR_label = customtkinter.CTkLabel(
+        ##    master=window,
+        ##    text="CAM ADDR",
+        ##    font=("Arial", 14),
+        ##    text_color="#000000",
+        ##    height=30,
+        ##    width=95,
+        ##    corner_radius=0,
+        ##    bg_color="#ffffff",
+        ##    fg_color="#ffffff",
+        ##    )
+        ##cam_ADDR_label.place(x=10, y=180)
 
         PLC_ADDR_label = customtkinter.CTkLabel(
             master=window,
@@ -205,9 +224,9 @@ def setup():
             )
         PLC_ADDR_label.place(x=10, y=0)
 
-        subnet_label = customtkinter.CTkLabel(
+        cam_name_label = customtkinter.CTkLabel(
             master=window,
-            text="SUBNET MASK",
+            text="Cam Name",
             font=("Arial", 14),
             text_color="#000000",
             height=30,
@@ -216,20 +235,33 @@ def setup():
             bg_color="#ffffff",
             fg_color="#ffffff",
             )
-        subnet_label.place(x=20, y=60)
+        cam_name_label.place(x=10, y=60)
 
-        gateway_label = customtkinter.CTkLabel(
-            master=window,
-            text="GATEWAY",
-            font=("Arial", 14),
-            text_color="#000000",
-            height=30,
-            width=95,
-            corner_radius=0,
-            bg_color="#ffffff",
-            fg_color="#ffffff",
-            )
-        gateway_label.place(x=10, y=120)
+        ##subnet_label = customtkinter.CTkLabel(
+        ##    master=window,
+        ##    text="SUBNET MASK",
+        ##    font=("Arial", 14),
+        ##    text_color="#000000",
+        ##    height=30,
+        ##    width=95,
+        ##    corner_radius=0,
+        ##    bg_color="#ffffff",
+        ##    fg_color="#ffffff",
+        ##    )
+        ##subnet_label.place(x=20, y=60)
+
+        ##gateway_label = customtkinter.CTkLabel(
+        ##    master=window,
+        ##    text="GATEWAY",
+        ##    font=("Arial", 14),
+        ##    text_color="#000000",
+        ##    height=30,
+        ##    width=95,
+        ##    corner_radius=0,
+        ##    bg_color="#ffffff",
+        ##    fg_color="#ffffff",
+        ##    )
+        ##gateway_label.place(x=10, y=120)
 
         time_label = customtkinter.CTkLabel(
             master=window,

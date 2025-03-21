@@ -392,11 +392,11 @@ def main():
                     print(f"Converting file to .MP4")
                     print(TempName)
                     time.sleep(2)
-                    if PLC_filename_enable:
+                    if PLC_filename_enable.value == 1:
                         filename = plc.read(cam_name + ".Filename")
-                    if not PLC_filename_enable:
+                    if PLC_filename_enable.value == 0:
                         filename = current_datetime
-                    print(filename + ".mp4")
+                    print(filename)
                     cmd = 'ffmpeg -r '+ fpsSTR + ' -i ' + TempName + ' -c copy ' + filename +'.mp4'
                     print(cmd)
                     os.system(cmd)

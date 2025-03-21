@@ -342,24 +342,27 @@ if input_mode == 3:
     #time.sleep(1)
 
 # Start Camera
-print(cam_name + ".Busy")
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(4, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-dur = pre_time
-fps = 30
-fpsSTR = str(fps)
-picam2 = Picamera2()
-preview_config = picam2.create_preview_configuration(main={"size": (640, 480)}, controls={'FrameRate': 15})
-picam2.start_preview(Preview.QTGL)
-picam2.configure(preview_config)
-micro = int((1 / fps) * 1000000)
-video_config = picam2.create_video_configuration(main={"size": (1920, 1080)}, controls={'FrameRate': fps})
-picam2.configure(video_config)
-encoder = H264Encoder()
-encoder.output = CircularOutput(buffersize=int(fps * (dur + 0.2)), outputtofile=False)
-picam2.start()
-picam2.start_encoder(encoder)
+try:
+    print(cam_name + ".Busy")
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(4, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+    GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+    dur = pre_time
+    fps = 30
+    fpsSTR = str(fps)
+    picam2 = Picamera2()
+    preview_config = picam2.create_preview_configuration(main={"size": (640, 480)}, controls={'FrameRate': 15})
+    picam2.start_preview(Preview.QTGL)
+    picam2.configure(preview_config)
+    micro = int((1 / fps) * 1000000)
+    video_config = picam2.create_video_configuration(main={"size": (1920, 1080)}, controls={'FrameRate': fps})
+    picam2.configure(video_config)
+    encoder = H264Encoder()
+    encoder.output = CircularOutput(buffersize=int(fps * (dur + 0.2)), outputtofile=False)
+    picam2.start()
+    picam2.start_encoder(encoder)
+except:
+    print("Failed to start camera. Check if the camera is connected and configured properly.")
 
 def main():
     global cam_start

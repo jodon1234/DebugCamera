@@ -383,10 +383,10 @@ def main():
                 response = plc.read(cam_name + ".Trigger_OUT")
                 heartbeat = plc.read(cam_name + ".Heartbeat_OUT")
                 plc.write(cam_name + ".Heartbeat_IN", heartbeat.value)
+                PLC_filename_enable = plc.read(cam_name + ".PLC_Filename_EN")
                 print(heartbeat)
                 if response.value == 1:
                     response = 0
-                    PLC_filename_enable = plc.read(cam_name + ".PLC_Filename_EN")
                     plc.write(cam_name + ".Busy", 1)
                     encoder.output.stop()
                     print(f"Converting file to .MP4")

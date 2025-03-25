@@ -12,3 +12,9 @@
 2025-03-25 10:10:00,527 - INFO - Applying config...
 2025-03-25 10:10:00,528 - INFO - 1.Busy
 2025-03-25 10:10:00,528 - ERROR - Failed to start camera. Check if the camera is connected and configured properly.
+2025-03-25 10:15:19,238 - ERROR - Failed to import libraries
+2025-03-25 10:15:19,239 - INFO - Starting...
+2025-03-25 10:15:19,239 - INFO - Setup Run
+2025-03-25 10:15:19,239 - INFO - True
+2025-03-25 10:15:19,331 - INFO - True
+2025-03-25 10:15:22,672 - INFO - True

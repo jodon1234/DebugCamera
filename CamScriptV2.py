@@ -1,6 +1,8 @@
 try:
    import os
    import subprocess
+   import logging
+   logging.basicConfig(filename='DebugCamera.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
    from tkinter import *
    import customtkinter
    import signal
@@ -12,11 +14,9 @@ try:
    from picamera2.outputs import CircularOutput, FfmpegOutput
    from datetime import datetime
    from pycomm3 import LogixDriver
-   import logging
 except:
-   logging.error("Error importing libraries. Ensure all required libraries are installed.")
+   logging.error("Failed to import libraries")
 
-logging.basicConfig(filename='DebugCamera.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logging.info("Starting...")
 
 cam_start = True

@@ -2,7 +2,7 @@ try:
    import os
    import subprocess
    import logging
-   logging.basicConfig(filename='DebugCamera.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+   from logging.handlers import RotatingFileHandler
    from tkinter import *
    import customtkinter
    import signal
@@ -14,9 +14,23 @@ try:
    from picamera2.outputs import CircularOutput, FfmpegOutput
    from datetime import datetime
    from pycomm3 import LogixDriver
+   from pycomm3.logger import configure_default_logger
 except:
    logging.error("Failed to import libraries")
 
+log_formatter = logging.Formatter('%(asctime)s %(levelname)s %(funcName)s(%(lineno)d) %(message)s')
+
+logFile = 'DebugCamera.log'
+
+my_handler = RotatingFileHandler(logFile, mode='a', maxBytes=5*1024*1024, 
+                                 backupCount=2, encoding=None, delay=0)
+my_handler.setFormatter(log_formatter)
+my_handler.setLevel(logging.INFO)
+
+app_log = logging.getLogger('root')
+app_log.setLevel(logging.INFO)
+
+app_log.addHandler(my_handler)
 logging.info("Starting...")
 
 cam_start = True
@@ -48,7 +62,7 @@ def setup():
        # Main Window Properties
        window = Tk()
        window.title("Camera Setup")
-       window.geometry("380x380")
+       window.geometry("400x400")
        window.configure(bg="#343635")
        def done_pressed():
            if input_mode > 0:
@@ -73,7 +87,7 @@ def setup():
        #FG Color #d6d6d6
        #FG Color #68da7b
 
-       text_1 = customtkinter.CTkTextbox(master=window, width=350, height=90)
+       text_1 = customtkinter.CTkTextbox(master=window, width=370, height=90, bg_color="#454545", fg_color="#454545", text_color="#ffffff",)
        text_1.pack(pady=10, padx=10)
        text_1.insert("0.0", " Please make sure the camera is connected to the Gentex \n Corporate network either over WIFI or Ethernet. Refer to \n the Readme in the camera root directory or on the flash \n drive for setup guide. ")
 
@@ -289,13 +303,12 @@ def main():
                plc.write(cam_name + ".Heartbeat_IN", heartbeat.value)
                PLC_filename_enable = plc.read(cam_name + ".PLC_Filename_EN")
                filename_temp = plc.read(cam_name + ".Filename")
-               logging.info(filename_temp.value)
-               logging.info(heartbeat)
                if response.value == 1:
                    response = 0
                    plc.write(cam_name + ".Busy", 1)
                    encoder.output.stop()
                    logging.info("Converting file to .MP4")
+                   logging.info(filename_temp.value)
                    logging.info(TempName)
                    time.sleep(2)
                    if PLC_filename_enable.value == 1:

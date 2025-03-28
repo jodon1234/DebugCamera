@@ -288,6 +288,8 @@ def main():
                heartbeat = plc.read(cam_name + ".Heartbeat_OUT")
                plc.write(cam_name + ".Heartbeat_IN", heartbeat.value)
                PLC_filename_enable = plc.read(cam_name + ".PLC_Filename_EN")
+               filename_temp = plc.read(cam_name + ".Filename")
+               print(filename_temp.value)
                logging.info(heartbeat)
                if response.value == 1:
                    response = 0

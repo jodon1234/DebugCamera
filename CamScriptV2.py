@@ -265,7 +265,7 @@ try:
    GPIO.setup(4, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
    GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
    dur = pre_time
-   fps = 30
+   fps = 60
    fpsSTR = str(fps)
    picam2 = Picamera2()
    preview_config = picam2.create_preview_configuration(main={"size": (640, 480)}, controls={'FrameRate': 15})

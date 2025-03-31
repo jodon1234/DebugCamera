@@ -288,10 +288,16 @@ def main():
    heartbeat = 0
    # Ethernet Trigger
    while input_mode == 3:
-       if plc_initialize:
-           plc = LogixDriver(PLC_IP)
-           plc.open()
-           plc_initialize = False
+       try:
+           if plc_initialize:
+               plc = LogixDriver(PLC_IP)
+               plc.open()
+               logging.info("Starting PLC connection")
+               plc_initialize = False
+       except:
+           logging.error("Failed to connect to PLC retrying...")
+           time.sleep(5)
+
        if cam_start:
            current_datetime = datetime.now().strftime("%Y-%m-%d-%H.%M.%S")
            TempName="Temp" + ".h264"

@@ -299,6 +299,7 @@ def main():
            time.sleep(5)
 
        if cam_start:
+           #Start recording
            current_datetime = datetime.now().strftime("%Y-%m-%d-%H.%M.%S")
            TempName="Temp" + ".h264"
            encoder.output.fileoutput = TempName
@@ -307,8 +308,8 @@ def main():
            cam_start = False
            picam2.set_controls({"AfMode": controls.AfModeEnum.Continuous})
        try:
+           #PLC Communication
            time.sleep(.5)
-           # Read the tag that indicates the command from the PLC
            response = plc.read(cam_name + ".Trigger_OUT")
            time.sleep(.2)
            heartbeat = plc.read(cam_name + ".Heartbeat_OUT")
@@ -322,6 +323,7 @@ def main():
            filename_temp = plc.read(cam_name + ".Filename")
 
            if response.value == 1:
+                #Save and convert buffer to mp4 upon trigger
                 response = 0
                 plc.write(cam_name + ".Busy", 1)
                 encoder.output.stop()
@@ -342,6 +344,7 @@ def main():
                 plc.write(cam_name + ".Trigger_OUT", 0)
                 plc.write(cam_name + ".Busy", 0)
                 logging.info("Done")
+                #Set cam_start to true to initialize the camera again
                 cam_start = True
        except:
            logging.error("Connection lost, retrying...")

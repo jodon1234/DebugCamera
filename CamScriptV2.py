@@ -265,12 +265,12 @@ try:
    GPIO.setup(4, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
    GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
    dur = pre_time
-   fps = 60
+   fps = 45
    fpsSTR = str(fps)
    picam2 = Picamera2()
    preview_config = picam2.create_preview_configuration(main={"size": (640, 480)}, controls={'FrameRate': 15})
-   picam2.start_preview(Preview.QTGL)
    picam2.configure(preview_config)
+   picam2.start_preview(Preview.QTGL)
    micro = int((1 / fps) * 1000000)
    video_config = picam2.create_video_configuration(main={"size": (1920, 1080)}, controls={'FrameRate': fps})
    picam2.configure(video_config)

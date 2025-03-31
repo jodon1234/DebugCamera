@@ -261,7 +261,6 @@ if input_mode == 3:
 
 # Start Camera
 try:
-   logging.info(cam_name + ".Busy")
    GPIO.setmode(GPIO.BCM)
    GPIO.setup(4, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
    GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
@@ -284,9 +283,15 @@ except:
 
 def main():
    global cam_start
+   plc_initialize = True
    trigger = False
+   heartbeat = 0
    # Ethernet Trigger
    while input_mode == 3:
+       if plc_initialize:
+           plc = LogixDriver(PLC_IP)
+           plc.open()
+           plc_initialize = False
        if cam_start:
            current_datetime = datetime.now().strftime("%Y-%m-%d-%H.%M.%S")
            TempName="Temp" + ".h264"
@@ -296,36 +301,42 @@ def main():
            cam_start = False
            picam2.set_controls({"AfMode": controls.AfModeEnum.Continuous})
        try:
-           with LogixDriver(PLC_IP) as plc:
-               # Read the tag that indicates the command from the PLC
-               response = plc.read(cam_name + ".Trigger_OUT")
-               heartbeat = plc.read(cam_name + ".Heartbeat_OUT")
-               plc.write(cam_name + ".Heartbeat_IN", heartbeat.value)
-               PLC_filename_enable = plc.read(cam_name + ".PLC_Filename_EN")
-               filename_temp = plc.read(cam_name + ".Filename")
-               time.sleep(0.5)
-               if response.value == 1:
-                   response = 0
-                   plc.write(cam_name + ".Busy", 1)
-                   encoder.output.stop()
-                   logging.info("Converting file to .MP4")
-                   logging.info(filename_temp.value)
-                   logging.info(TempName)
-                   time.sleep(2)
-                   if PLC_filename_enable.value == 1:
-                       filename = filename_temp.value
-                   if PLC_filename_enable.value == 0:
-                       filename = current_datetime
-                   logging.info(filename)
-                   cmd = 'ffmpeg -r '+ fpsSTR + ' -i ' + TempName + ' -c copy ' + filename +'.mp4'
-                   logging.info(cmd)
-                   os.system(cmd)
-                   time.sleep(10)
-                   plc.write(cam_name + ".Done", 1)
-                   plc.write(cam_name + ".Trigger_OUT", 0)
-                   plc.write(cam_name + ".Busy", 0)
-                   logging.info("Done")
-                   cam_start = True
+           time.sleep(.5)
+           # Read the tag that indicates the command from the PLC
+           response = plc.read(cam_name + ".Trigger_OUT")
+           time.sleep(.2)
+           heartbeat = plc.read(cam_name + ".Heartbeat_OUT")
+           logging.info(f"Heartbeat_OUT: {heartbeat.value}")
+           time.sleep(.2)
+           plc.write(cam_name + ".Heartbeat_IN", heartbeat.value)
+           logging.info(f"Heartbeat_IN: {heartbeat.value}")
+           time.sleep(.2)
+           PLC_filename_enable = plc.read(cam_name + ".PLC_Filename_EN")
+           time.sleep(.2)
+           filename_temp = plc.read(cam_name + ".Filename")
+
+           if response.value == 1:
+                response = 0
+                plc.write(cam_name + ".Busy", 1)
+                encoder.output.stop()
+                logging.info("Converting file to .MP4")
+                logging.info(filename_temp.value)
+                logging.info(TempName)
+                time.sleep(2)
+                if PLC_filename_enable.value == 1:
+                    filename = filename_temp.value
+                if PLC_filename_enable.value == 0:
+                    filename = current_datetime
+                logging.info(filename)
+                cmd = 'ffmpeg -r '+ fpsSTR + ' -i ' + TempName + ' -c copy ' + filename +'.mp4'
+                logging.info(cmd)
+                os.system(cmd)
+                time.sleep(10)
+                plc.write(cam_name + ".Done", 1)
+                plc.write(cam_name + ".Trigger_OUT", 0)
+                plc.write(cam_name + ".Busy", 0)
+                logging.info("Done")
+                cam_start = True
        except:
            logging.error("Connection lost, retrying...")
            time.sleep(5)

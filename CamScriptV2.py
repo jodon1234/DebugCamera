@@ -130,11 +130,11 @@ def setup():
 
        connect_status = customtkinter.CTkTextbox(master=window, width=150, height=5, bg_color="#343635", fg_color="#343635", text_color="#ffffff", font=("Arial", 10))
        connect_status.pack(pady=10, padx=10)
-       connect_status.place(x=226, y=280)
+       connect_status.place(x=240, y=280)
 
        aoi_status = customtkinter.CTkTextbox(master=window, width=150, height=5, bg_color="#343635", fg_color="#343635", text_color="#ffffff", font=("Arial", 10))
        aoi_status.pack(pady=10, padx=10)
-       aoi_status.place(x=226, y=300)
+       aoi_status.place(x=240, y=300)
 
        def test_pressed():
            status1 = ""
@@ -232,7 +232,7 @@ def setup():
            fg_color="#2e7039",
            command=test_pressed
            )
-       test_button.place(x=230, y=240)
+       test_button.place(x=250, y=240)
 
        test_label = customtkinter.CTkLabel(
            master=window,
@@ -245,7 +245,7 @@ def setup():
            bg_color="#343635",
            fg_color="#343635",
            )
-       test_label.place(x=230, y=210)
+       test_label.place(x=250, y=210)
 
        PLC_ADDR_label = customtkinter.CTkLabel(
            master=window,

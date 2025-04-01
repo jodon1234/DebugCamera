@@ -128,11 +128,11 @@ def setup():
        text_1.pack(pady=10, padx=10)
        text_1.insert("0.0", " Please make sure the camera is connected to the Gentex \n Corporate network either over WIFI or Ethernet. Refer to \n the Readme in the camera root directory or on the flash \n drive for setup guide. ")
 
-       connect_status = customtkinter.CTkTextbox(master=window, width=150, height=5, bg_color="#454545", fg_color="#454545", text_color="#ffffff", font=("Arial", 10))
+       connect_status = customtkinter.CTkTextbox(master=window, width=150, height=5, bg_color="#343635", fg_color="#343635", text_color="#ffffff", font=("Arial", 10))
        connect_status.pack(pady=10, padx=10)
        connect_status.place(x=226, y=280)
 
-       aoi_status = customtkinter.CTkTextbox(master=window, width=150, height=5, bg_color="#454545", fg_color="#454545", text_color="#ffffff", font=("Arial", 10))
+       aoi_status = customtkinter.CTkTextbox(master=window, width=150, height=5, bg_color="#343635", fg_color="#343635", text_color="#ffffff", font=("Arial", 10))
        aoi_status.pack(pady=10, padx=10)
        aoi_status.place(x=226, y=300)
 

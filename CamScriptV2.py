@@ -63,9 +63,11 @@ def test_connection(IP, name):
             plc.write(name + ".Filename", str)
             time.sleep(2)
             str1 = plc.read(name + ".Filename")
+            logging.info(str)
+            logging.info(str1.value)
             if str1.value == str:
-                status2 = "Cam Tag Found"
-                logging.info("Cam Tag Found")
+                status2 = "AOI Configured Correctly"
+                logging.info("AOI Configured Correctly")
                 return status1, status2
             else:
                 logging.error("Cam Tag not found")

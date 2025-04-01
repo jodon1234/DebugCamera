@@ -1,3 +1,7 @@
+from multiprocessing import connection
+from sqlite3 import connect
+
+
 try:
    import os
    import subprocess
@@ -44,6 +48,39 @@ GATEWAY = '192.168.1.1'
 pre_time = 90
 cam_name = 'Cam1'
 
+def test_connection(IP, name):
+    status1 = "Failed"
+    status2 = "Failed"
+    try:
+        logging.info("Testing Connection " + IP)
+        plc = LogixDriver(IP)
+        plc.open()
+        status1 = "Connection Sucessful"
+        logging.info("Connection Sucessful")
+        try:
+            logging.info("Testing Cam Tag " + name)
+            str = "test"
+            plc.write(name + ".Filename", str)
+            time.sleep(2)
+            str1 = plc.read(name + ".Filename")
+            if str1.value == str:
+                status2 = "Cam Tag Found"
+                logging.info("Cam Tag Found")
+                return status1, status2
+            else:
+                logging.error("Cam Tag not found")
+                status2 = "AOI Not Configured"
+                return status1, status2
+
+        except:
+            logging.error("Cam Tag not found")
+            status2 = "Tag Not Found"
+            return status1, status2
+    except:
+        logging.error("Failed to connect to PLC")
+        status1 = "PLC Connection Failed"
+        return status1, status2
+
 def setup():
    while setup_req:
 
@@ -64,6 +101,7 @@ def setup():
        window.title("Camera Setup")
        window.geometry("400x400")
        window.configure(bg="#343635")
+
        def done_pressed():
            if input_mode > 0:
                global setup_req
@@ -90,6 +128,26 @@ def setup():
        text_1 = customtkinter.CTkTextbox(master=window, width=370, height=90, bg_color="#454545", fg_color="#454545", text_color="#ffffff",)
        text_1.pack(pady=10, padx=10)
        text_1.insert("0.0", " Please make sure the camera is connected to the Gentex \n Corporate network either over WIFI or Ethernet. Refer to \n the Readme in the camera root directory or on the flash \n drive for setup guide. ")
+
+       connect_status = customtkinter.CTkTextbox(master=window, width=150, height=5, bg_color="#454545", fg_color="#454545", text_color="#ffffff", font=("Arial", 10))
+       connect_status.pack(pady=10, padx=10)
+       connect_status.place(x=226, y=280)
+
+       aoi_status = customtkinter.CTkTextbox(master=window, width=150, height=5, bg_color="#454545", fg_color="#454545", text_color="#ffffff", font=("Arial", 10))
+       aoi_status.pack(pady=10, padx=10)
+       aoi_status.place(x=226, y=300)
+
+       def test_pressed():
+           status1 = ""
+           status2 = ""
+           TEST_IP = plc_addr_entry.get()
+           TEST_name = cam_name_entry.get()
+           connect_status.delete("1.0",END)
+           aoi_status.delete("1.0",END)
+           status1, status2 = test_connection(TEST_IP, TEST_name)
+           connect_status.insert("0.0", status1)
+           aoi_status.insert("0.0", status2)
+       
 
        plc_addr_entry = customtkinter.CTkEntry(
            master=window,
@@ -122,6 +180,7 @@ def setup():
            fg_color="#2e7039",
            )
        cam_name_entry.place(x=10, y=190)
+       cam_name_entry.insert(0, "Cam1")
 
        pre_trig_time = customtkinter.CTkEntry(
            master=window,
@@ -138,6 +197,7 @@ def setup():
            fg_color="#2e7039",
            )
        pre_trig_time.place(x=220, y=130)
+       pre_trig_time.insert(0, "30")
 
        done_button = customtkinter.CTkButton(
            master=window,
@@ -157,9 +217,40 @@ def setup():
            )
        done_button.place(x=130, y=340)
 
+       test_button = customtkinter.CTkButton(
+           master=window,
+           text="TEST",
+           font=("undefined", 14),
+           text_color="#ffffff",
+           hover=True,
+           hover_color="#949494",
+           height=30,
+           width=95,
+           border_width=2,
+           corner_radius=8,
+           border_color="#000000",
+           bg_color="#343635",
+           fg_color="#2e7039",
+           command=test_pressed
+           )
+       test_button.place(x=230, y=240)
+
+       test_label = customtkinter.CTkLabel(
+           master=window,
+           text="Test Connection",
+           font=("Arial", 14),
+           text_color="#ffffff",
+           height=30,
+           width=95,
+           corner_radius=0,
+           bg_color="#343635",
+           fg_color="#343635",
+           )
+       test_label.place(x=230, y=210)
+
        PLC_ADDR_label = customtkinter.CTkLabel(
            master=window,
-           text="PLC ADDR",
+           text="PLC Address",
            font=("Arial", 14),
            text_color="#ffffff",
            height=30,

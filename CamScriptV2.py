@@ -99,6 +99,7 @@ def setup():
        window = Tk()
        window.title("Camera Setup")
        window.geometry("400x400")
+       window.resizable(False, False)
        window.configure(bg="#343635")
 
        def done_pressed():
@@ -214,7 +215,7 @@ def setup():
            fg_color="#2e7039",
            command=done_pressed
            )
-       done_button.place(x=130, y=340)
+       done_button.place(x=150, y=340)
 
        test_button = customtkinter.CTkButton(
            master=window,

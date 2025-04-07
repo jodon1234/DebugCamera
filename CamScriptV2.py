@@ -1,4 +1,10 @@
-
+# Debug Camera
+#
+# This program is used to control the debug camera based on the Picamera2 library
+# This script records with a ring buffer meaning it is always recording but only saves recorded footage upon trigger from a PLC.
+#
+# REV: 1.1
+# Author: Jordan Shrauger
 try:
    import os
    import subprocess

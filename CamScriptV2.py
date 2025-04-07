@@ -7,6 +7,7 @@ try:
    from tkinter import *
    import customtkinter
    import signal
+   import socket
    import time
    import RPi.GPIO as GPIO
    from libcamera import controls
@@ -44,6 +45,10 @@ SUBNET = '255.255.255.0'
 GATEWAY = '192.168.1.1'
 pre_time = 90
 cam_name = 'Cam1'
+time.sleep(15)
+hostname = socket.gethostname()
+PI_IP = socket.gethostbyname(hostname)
+logging.info("Pi IP: " + PI_IP)
 
 def test_connection(IP, name):
     status1 = "Failed"
@@ -125,9 +130,9 @@ def setup():
        #FG Color #d6d6d6
        #FG Color #68da7b
 
-       text_1 = customtkinter.CTkTextbox(master=window, width=370, height=90, bg_color="#454545", fg_color="#454545", text_color="#ffffff",)
+       text_1 = customtkinter.CTkTextbox(master=window, width=370, height=92, bg_color="#454545", fg_color="#454545", text_color="#ffffff",)
        text_1.pack(pady=10, padx=10)
-       text_1.insert("0.0", " Please make sure the camera is connected to the Gentex \n Corporate network either over WIFI or Ethernet. Refer to \n the Readme in the camera root directory or on the flash \n drive for setup guide. ")
+       text_1.insert("0.0", " Please make sure the camera is connected to the Gentex \n Corporate network either over WIFI or Ethernet. Refer to \n the Readme in the camera root directory or on the flash \n drive for setup guide. \n PI ADDRESS: "+ PI_IP)
 
        connect_status = customtkinter.CTkTextbox(master=window, width=150, height=5, bg_color="#343635", fg_color="#343635", text_color="#ffffff", font=("Arial", 10))
        connect_status.pack(pady=10, padx=10)
@@ -163,7 +168,7 @@ def setup():
            bg_color="#343635",
            fg_color="#2e7039",
            )
-       plc_addr_entry.place(x=10, y=130)
+       plc_addr_entry.place(x=10, y=140)
 
        cam_name_entry = customtkinter.CTkEntry(
            master=window,
@@ -179,7 +184,7 @@ def setup():
            bg_color="#343635",
            fg_color="#2e7039",
            )
-       cam_name_entry.place(x=10, y=190)
+       cam_name_entry.place(x=10, y=200)
        cam_name_entry.insert(0, "Cam1")
 
        pre_trig_time = customtkinter.CTkEntry(
@@ -196,7 +201,7 @@ def setup():
            bg_color="#343635",
            fg_color="#2e7039",
            )
-       pre_trig_time.place(x=220, y=130)
+       pre_trig_time.place(x=220, y=140)
        pre_trig_time.insert(0, "30")
 
        done_button = customtkinter.CTkButton(
@@ -233,7 +238,7 @@ def setup():
            fg_color="#2e7039",
            command=test_pressed
            )
-       test_button.place(x=250, y=240)
+       test_button.place(x=250, y=250)
 
        test_label = customtkinter.CTkLabel(
            master=window,
@@ -246,7 +251,7 @@ def setup():
            bg_color="#343635",
            fg_color="#343635",
            )
-       test_label.place(x=250, y=210)
+       test_label.place(x=250, y=220)
 
        PLC_ADDR_label = customtkinter.CTkLabel(
            master=window,
@@ -259,7 +264,7 @@ def setup():
            bg_color="#343635",
            fg_color="#343635",
            )
-       PLC_ADDR_label.place(x=10, y=100)
+       PLC_ADDR_label.place(x=10, y=110)
 
        cam_name_label = customtkinter.CTkLabel(
            master=window,
@@ -272,7 +277,7 @@ def setup():
            bg_color="#343635",
            fg_color="#343635",
            )
-       cam_name_label.place(x=10, y=160)
+       cam_name_label.place(x=10, y=170)
 
        time_label = customtkinter.CTkLabel(
            master=window,
@@ -285,7 +290,7 @@ def setup():
            bg_color="#343635",
            fg_color="#343635",
            )
-       time_label.place(x=220, y=105)
+       time_label.place(x=220, y=115)
 
        radio_internal = customtkinter.CTkRadioButton(
            master=window,
@@ -298,7 +303,7 @@ def setup():
            hover_color="#2F2F2F",
            command=internal_sel
            )
-       radio_internal.place(x=10, y=310)
+       radio_internal.place(x=10, y=320)
 
        radio_external = customtkinter.CTkRadioButton(
            master=window,
@@ -311,7 +316,7 @@ def setup():
            hover_color="#2F2F2F",
            command=external_sel
            )
-       radio_external.place(x=10, y=280)
+       radio_external.place(x=10, y=290)
 
        radio_ethernet = customtkinter.CTkRadioButton(
            master=window,
@@ -324,7 +329,7 @@ def setup():
            hover_color="#2F2F2F",
            command=ethernet_sel
            )
-       radio_ethernet.place(x=10, y=250)
+       radio_ethernet.place(x=10, y=260)
        
        #run the main loop
        if setup_req:

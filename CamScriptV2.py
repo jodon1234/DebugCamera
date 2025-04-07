@@ -45,9 +45,7 @@ SUBNET = '255.255.255.0'
 GATEWAY = '192.168.1.1'
 pre_time = 90
 cam_name = 'Cam1'
-time.sleep(15)
 hostname = socket.gethostname()
-PI_IP = socket.gethostbyname(hostname)
 logging.info("Pi IP: " + PI_IP)
 
 def test_connection(IP, name):
@@ -127,10 +125,11 @@ def setup():
        #BG Color #ffffff
        #FG Color #d6d6d6
        #FG Color #68da7b
+       PI_IP = socket.gethostbyname(hostname)
 
        text_1 = customtkinter.CTkTextbox(master=window, width=370, height=92, bg_color="#454545", fg_color="#454545", text_color="#ffffff",)
        text_1.pack(pady=10, padx=10)
-       text_1.insert("0.0", " Please make sure the camera is connected to the Gentex \n Corporate network either over WIFI or Ethernet. Refer to \n the Readme in the camera root directory or on the flash \n drive for setup guide. \n PI ADDRESS: "+ PI_IP)
+       text_1.insert("0.0", " Please make sure the camera is connected to the Gentex \n Corporate network either over WIFI or Ethernet. Refer to \n the Readme in the camera root directory or on the flash \n drive for setup guide. \n CAM ADDRESS: "+ PI_IP)
 
        connect_status = customtkinter.CTkTextbox(master=window, width=150, height=5, bg_color="#343635", fg_color="#343635", text_color="#ffffff", font=("Arial", 10))
        connect_status.pack(pady=10, padx=10)

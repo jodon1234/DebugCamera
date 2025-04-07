@@ -9,14 +9,14 @@ try:
    import signal
    import socket
    import time
+   from datetime import datetime
+   from pycomm3 import LogixDriver
+   from pycomm3.logger import configure_default_logger
    import RPi.GPIO as GPIO
    from libcamera import controls
    from picamera2 import Picamera2, Preview
    from picamera2.encoders import H264Encoder
    from picamera2.outputs import CircularOutput, FfmpegOutput
-   from datetime import datetime
-   from pycomm3 import LogixDriver
-   from pycomm3.logger import configure_default_logger
 except:
    logging.error("Failed to import libraries")
 
@@ -125,7 +125,6 @@ def setup():
            if input_mode > 0:
                global setup_req
                global PLC_IP
-               global PI_IP
                global SUBNET
                global GATEWAY
                global pre_time
@@ -143,7 +142,7 @@ def setup():
        #FG Color #68da7b
        PI_IP = get_ip()
        logging.info(PI_IP)
-       text_1 = customtkinter.CTkTextbox(master=window, width=370, height=95, bg_color="#454545", fg_color="#454545", text_color="#ffffff", font=("Arial", 10))
+       text_1 = customtkinter.CTkTextbox(master=window, width=370, height=95, bg_color="#454545", fg_color="#454545", text_color="#ffffff", font=("Arial", 12))
        text_1.pack(pady=10, padx=10)
        text_1.insert("0.0", " Please make sure the camera is connected to the Gentex \n Corporate network either over WIFI or Ethernet. Refer to \n the Readme in the camera root directory or on the flash \n drive for setup guide. \n CAM ADDRESS: "+ PI_IP)
 

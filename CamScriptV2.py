@@ -46,7 +46,9 @@ GATEWAY = '192.168.1.1'
 pre_time = 90
 cam_name = 'Cam1'
 hostname = socket.gethostname()
-logging.info("Pi IP: " + PI_IP)
+logging.info("Hostname: " + hostname)
+#Give the camera some time to connect to the netowrk
+time.sleep(5)
 
 def test_connection(IP, name):
     status1 = "Failed"
@@ -82,6 +84,20 @@ def test_connection(IP, name):
         logging.error("Failed to connect to PLC")
         status1 = "PLC Connection Failed"
         return status1, status2
+
+def get_ip():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.settimeout(0)
+    try:
+        # doesn't even have to be reachable
+        s.connect(('10.254.254.254', 1))
+        IP = s.getsockname()[0]
+    except Exception:
+        IP = '127.0.0.1'
+    finally:
+        s.close()
+    return IP
+
 
 def setup():
    while setup_req:
@@ -125,9 +141,9 @@ def setup():
        #BG Color #ffffff
        #FG Color #d6d6d6
        #FG Color #68da7b
-       PI_IP = socket.gethostbyname(hostname)
-
-       text_1 = customtkinter.CTkTextbox(master=window, width=370, height=92, bg_color="#454545", fg_color="#454545", text_color="#ffffff",)
+       PI_IP = get_ip()
+       logging.info(PI_IP)
+       text_1 = customtkinter.CTkTextbox(master=window, width=370, height=95, bg_color="#454545", fg_color="#454545", text_color="#ffffff", font=("Arial", 10))
        text_1.pack(pady=10, padx=10)
        text_1.insert("0.0", " Please make sure the camera is connected to the Gentex \n Corporate network either over WIFI or Ethernet. Refer to \n the Readme in the camera root directory or on the flash \n drive for setup guide. \n CAM ADDRESS: "+ PI_IP)
 

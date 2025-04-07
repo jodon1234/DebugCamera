@@ -121,8 +121,6 @@ def setup():
                cam_name = cam_name_entry.get()
                pre_timestr = pre_trig_time.get()
                pre_time = int(pre_timestr)
-               logging.info("Done")
-               logging.info(setup_req)
                window.destroy()
 
        radio_var = IntVar()
@@ -333,12 +331,10 @@ def setup():
        
        #run the main loop
        if setup_req:
-           logging.info(setup_req)
            window.mainloop()
 
 if setup_req:
    logging.info("Setup Run")
-   logging.info(setup_req)
    setup()
 
 if input_mode == 3:
@@ -405,7 +401,7 @@ def main():
            picam2.set_controls({"AfMode": controls.AfModeEnum.Continuous})
        try:
            #PLC Communication
-           time.sleep(.5)
+           time.sleep(.2)
            response = plc.read(cam_name + ".Trigger_OUT")
            time.sleep(.2)
            heartbeat = plc.read(cam_name + ".Heartbeat_OUT")

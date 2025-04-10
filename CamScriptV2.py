@@ -18,6 +18,8 @@ try:
    from datetime import datetime
    from pycomm3 import LogixDriver
    from pycomm3.logger import configure_default_logger
+   import cv2
+   import numpy as np
    import RPi.GPIO as GPIO
    from libcamera import controls
    from picamera2 import Picamera2, Preview
@@ -421,18 +423,21 @@ def main():
            picam2.set_controls({"AfMode": controls.AfModeEnum.Continuous})
        try:
            #PLC Communication
-           time.sleep(.2)
            response = plc.read(cam_name + ".Trigger_OUT")
-           time.sleep(.2)
            heartbeat = plc.read(cam_name + ".Heartbeat_OUT")
            logging.info(f"Heartbeat_OUT: {heartbeat.value}")
-           time.sleep(.2)
            plc.write(cam_name + ".Heartbeat_IN", heartbeat.value)
            logging.info(f"Heartbeat_IN: {heartbeat.value}")
-           time.sleep(.2)
            PLC_filename_enable = plc.read(cam_name + ".PLC_Filename_EN")
-           time.sleep(.2)
            filename_temp = plc.read(cam_name + ".Filename")
+           colour = (0, 255, 0, 255)
+           origin = (0, 30)
+           font = cv2.FONT_HERSHEY_SIMPLEX
+           scale = 1
+           thickness = 2
+           overlay = np.zeros((640, 480, 4), dtype=np.uint8)
+           cv2.putText(overlay, "hello world", origin, font, scale, colour, thickness)
+           picam2.set_overlay(overlay)
 
            if response.value == 1:
                 #Save and convert buffer to mp4 upon trigger

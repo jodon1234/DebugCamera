@@ -58,6 +58,8 @@ pre_time = 90
 cam_name = 'Cam1'
 hostname = socket.gethostname()
 logging.info("Hostname: " + hostname)
+tag_tracking_en = False
+tag_tracking_text = "No tags to track \n does this work?"
 #Give the camera some time to connect to the netowrk
 time.sleep(5)
 
@@ -392,9 +394,8 @@ try:
    thickness = 2
    def overlay(overlay):
 
-       timestamp = time.strftime("%Y-%m-%d %X")
        with MappedArray(overlay, "main") as m:
-            cv2.putText(m.array, timestamp, origin, font, scale, colour, thickness)
+            cv2.putText(m.array, tag_tracking_text, origin, font, scale, colour, thickness)
 
    picam2.pre_callback = overlay
    preview_config = picam2.create_preview_configuration(main={"size": (640, 480)}, controls={'FrameRate': 15})
@@ -412,6 +413,8 @@ except:
 
 def main():
    global cam_start
+   global tag_tracking_en
+   global tag_tracking_text
    plc_initialize = True
    trigger = False
    heartbeat = 0
@@ -446,6 +449,7 @@ def main():
            logging.info(f"Heartbeat_IN: {heartbeat.value}")
            PLC_filename_enable = plc.read(cam_name + ".PLC_Filename_EN")
            filename_temp = plc.read(cam_name + ".Filename")
+           tag_tracking_text = str(heartbeat.value)
            if response.value == 1:
                 #Save and convert buffer to mp4 upon trigger
                 response = 0

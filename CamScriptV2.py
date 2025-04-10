@@ -135,7 +135,7 @@ def setup():
        # Main Window Properties
        window = Tk()
        window.title("Camera Setup")
-       window.geometry("400x400")
+       window.geometry("600x400")
        window.resizable(False, False)
        window.configure(bg="#343635")
 
@@ -147,11 +147,19 @@ def setup():
                global GATEWAY
                global pre_time
                global cam_name
+               global tag1
+               global tag2
+               global tag3
+               global tag4
                setup_req = False
                PLC_IP = plc_addr_entry.get()
                cam_name = cam_name_entry.get()
                pre_timestr = pre_trig_time.get()
                pre_time = int(pre_timestr)
+               tag1 = tag1_entry.get()
+               tag2 = tag2_entry.get()
+               tag3 = tag3_entry.get()
+               tag4 = tag4_entry.get()
                window.destroy()
 
        radio_var = IntVar()
@@ -233,6 +241,70 @@ def setup():
            )
        pre_trig_time.place(x=220, y=140)
        pre_trig_time.insert(0, "30")
+
+       tag1_entry = customtkinter.CTkEntry(
+           master=window,
+           placeholder_text="Tag 1",
+           placeholder_text_color="#ffffff",
+           font=("Arial", 14),
+           text_color="#ffffff",
+           height=30,
+           width=195,
+           border_width=2,
+           corner_radius=8,
+           border_color="#000000",
+           bg_color="#343635",
+           fg_color="#2e7039",
+           )
+       tag1_entry.place(x=400, y=140)
+
+       tag2_entry = customtkinter.CTkEntry(
+           master=window,
+           placeholder_text="Tag 2",
+           placeholder_text_color="#ffffff",
+           font=("Arial", 14),
+           text_color="#ffffff",
+           height=30,
+           width=195,
+           border_width=2,
+           corner_radius=8,
+           border_color="#000000",
+           bg_color="#343635",
+           fg_color="#2e7039",
+           )
+       tag2_entry.place(x=400, y=170)
+
+       tag3_entry = customtkinter.CTkEntry(
+           master=window,
+           placeholder_text="Tag 3",
+           placeholder_text_color="#ffffff",
+           font=("Arial", 14),
+           text_color="#ffffff",
+           height=30,
+           width=195,
+           border_width=2,
+           corner_radius=8,
+           border_color="#000000",
+           bg_color="#343635",
+           fg_color="#2e7039",
+           )
+       tag3_entry.place(x=400, y=200)
+
+       tag4_entry = customtkinter.CTkEntry(
+           master=window,
+           placeholder_text="Tag 4",
+           placeholder_text_color="#ffffff",
+           font=("Arial", 14),
+           text_color="#ffffff",
+           height=30,
+           width=195,
+           border_width=2,
+           corner_radius=8,
+           border_color="#000000",
+           bg_color="#343635",
+           fg_color="#2e7039",
+           )
+       tag4_entry.place(x=400, y=230)
 
        done_button = customtkinter.CTkButton(
            master=window,
@@ -321,6 +393,19 @@ def setup():
            fg_color="#343635",
            )
        time_label.place(x=220, y=115)
+
+       tag_tracking_label = customtkinter.CTkLabel(
+           master=window,
+           text="Tag Tracking",
+           font=("Arial", 14),
+           text_color="#ffffff",
+           height=30,
+           width=95,
+           corner_radius=0,
+           bg_color="#343635",
+           fg_color="#343635",
+           )
+       tag_tracking_label.place(x=400, y=110)
 
        radio_internal = customtkinter.CTkRadioButton(
            master=window,
@@ -464,21 +549,27 @@ def main():
            filename_temp = plc.read(cam_name + ".Filename")
            if tag_tracking_en:
                try:
-                   logging.info("1")
                    tag1_textfull = "null"
                    tag2_textfull = "null"
                    tag3_textfull = "null"
                    tag4_textfull = "null"
-                   logging.info("2")
                    if tag1_tracking_en:
                         tag1text = plc.read(tag1)
-                        logging.info("3")
                         tag1_textfull = (tag1+ ": " + str(tag1text.value))
-                        logging.info("4")
                         logging.info(tag1_textfull)
-                        logging.info("5")
+                   if tag2_tracking_en:
+                        tag2text = plc.read(tag2)
+                        tag2_textfull = (tag2+ ": " + str(tag2text.value))
+                        logging.info(tag2_textfull)
+                   if tag3_tracking_en:
+                        tag3text = plc.read(tag3)
+                        tag3_textfull = (tag3+ ": " + str(tag3text.value))
+                        logging.info(tag3_textfull)
+                   if tag4_tracking_en:
+                        tag4text = plc.read(tag4)
+                        tag4_textfull = (tag4+ ": " + str(tag4text.value))
+                        logging.info(tag4_textfull)
                    tag_tracking_text = (tag1_textfull + " " + tag2_textfull + " " + tag3_textfull + " " + tag4_textfull)
-                   logging.info("6")
                except:
                     tag_tracking_text = "Tag Load Error"
                     logging.error("Tag not found")

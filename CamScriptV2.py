@@ -58,8 +58,13 @@ pre_time = 90
 cam_name = 'Cam1'
 hostname = socket.gethostname()
 logging.info("Hostname: " + hostname)
-tag_tracking_en = False
-tag_tracking_text = "No tags to track \n does this work?"
+tag_tracking_en = True
+tag1_tracking_en = True
+tag2_tracking_en = False
+tag3_tracking_en = False
+tag4_tracking_en = False
+tag1 = "Dial_CurrentPosition"
+tag_tracking_text = "Loading Tags..."
 #Give the camera some time to connect to the netowrk
 time.sleep(5)
 
@@ -414,6 +419,14 @@ except:
 def main():
    global cam_start
    global tag_tracking_en
+   global tag1_tracking_en
+   global tag2_tracking_en
+   global tag3_tracking_en
+   global tag4_tracking_en
+   global tag1
+   global tag2
+   global tag3
+   global tag4
    global tag_tracking_text
    plc_initialize = True
    trigger = False
@@ -449,7 +462,28 @@ def main():
            logging.info(f"Heartbeat_IN: {heartbeat.value}")
            PLC_filename_enable = plc.read(cam_name + ".PLC_Filename_EN")
            filename_temp = plc.read(cam_name + ".Filename")
-           tag_tracking_text = str(heartbeat.value)
+           if tag_tracking_en:
+               try:
+                   logging.info("1")
+                   tag1_textfull = "null"
+                   tag2_textfull = "null"
+                   tag3_textfull = "null"
+                   tag4_textfull = "null"
+                   logging.info("2")
+                   if tag1_tracking_en:
+                        tag1text = plc.read(tag1)
+                        logging.info("3")
+                        tag1_textfull = (tag1+ ": " + str(tag1text.value))
+                        logging.info("4")
+                        logging.info(tag1_textfull)
+                        logging.info("5")
+                   tag_tracking_text = (tag1_textfull + " " + tag2_textfull + " " + tag3_textfull + " " + tag4_textfull)
+                   logging.info("6")
+               except:
+                    tag_tracking_text = "Tag Load Error"
+                    logging.error("Tag not found")
+
+
            if response.value == 1:
                 #Save and convert buffer to mp4 upon trigger
                 response = 0

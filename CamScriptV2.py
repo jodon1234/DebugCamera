@@ -25,7 +25,7 @@ try:
    import numpy as np
    import RPi.GPIO as GPIO
    from libcamera import controls
-   from picamera2 import Picamera2, Preview
+   from picamera2 import Picamera2, Preview, MappedArray
    from picamera2.encoders import H264Encoder
    from picamera2.outputs import CircularOutput, FfmpegOutput
 except:
@@ -379,37 +379,33 @@ if input_mode == 3:
 # Start Camera
 try:
    GPIO.setmode(GPIO.BCM)
-   logging.info("1")
    GPIO.setup(4, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-   logging.info("2")
    GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-   logging.info("3")
    dur = pre_time
-   logging.info("4")
    fps = 40
-   logging.info("5")
    fpsSTR = str(fps)
-   logging.info("6")
    picam2 = Picamera2()
-   logging.info("7")
+   colour = (0, 255, 0, 255)
+   origin = (0, 30)
+   font = cv2.FONT_HERSHEY_SIMPLEX
+   scale = 1
+   thickness = 2
+   def overlay(overlay):
+
+       timestamp = time.strftime("%Y-%m-%d %X")
+       with MappedArray(overlay, "main") as m:
+            cv2.putText(m.array, timestamp, origin, font, scale, colour, thickness)
+
+   picam2.pre_callback = overlay
    preview_config = picam2.create_preview_configuration(main={"size": (640, 480)}, controls={'FrameRate': 15})
-   logging.info("8")
    picam2.configure(preview_config)
-   logging.info("9")
    picam2.start_preview(Preview.QTGL)
-   logging.info("10")
    micro = int((1 / fps) * 1000000)
-   logging.info("11")
    video_config = picam2.create_video_configuration(main={"size": (1920, 1080)}, controls={'FrameRate': fps})
-   logging.info("12")
    picam2.configure(video_config)
-   logging.info("13")
    encoder = H264Encoder()
-   logging.info("14")
    encoder.output = CircularOutput(buffersize=int(fps * (dur + 0.2)), outputtofile=False)
-   logging.info("15")
    picam2.start()
-   logging.info("16")
    picam2.start_encoder(encoder)
 except:
    logging.error("Failed to start camera. Check if the camera is connected and configured properly.")
@@ -444,17 +440,12 @@ def main():
            #PLC Communication
            time.sleep(.2)
            response = plc.read(cam_name + ".Trigger_OUT")
-           time.sleep(.2)
            heartbeat = plc.read(cam_name + ".Heartbeat_OUT")
            logging.info(f"Heartbeat_OUT: {heartbeat.value}")
-           time.sleep(.2)
            plc.write(cam_name + ".Heartbeat_IN", heartbeat.value)
            logging.info(f"Heartbeat_IN: {heartbeat.value}")
-           time.sleep(.2)
            PLC_filename_enable = plc.read(cam_name + ".PLC_Filename_EN")
-           time.sleep(.2)
            filename_temp = plc.read(cam_name + ".Filename")
-
            if response.value == 1:
                 #Save and convert buffer to mp4 upon trigger
                 response = 0

@@ -63,8 +63,6 @@ tag1_tracking_en = True
 tag2_tracking_en = True
 tag3_tracking_en = True
 tag4_tracking_en = True
-tag1 = "Dial_CurrentPosition"
-tag_tracking_text = "Loading Tags..."
 #Give the camera some time to connect to the netowrk
 time.sleep(5)
 
@@ -147,6 +145,7 @@ def setup():
                global GATEWAY
                global pre_time
                global cam_name
+               global tag_tracking_text
                global tag_tracking_en
                global tag1_tracking_en
                global tag2_tracking_en
@@ -167,6 +166,8 @@ def setup():
                tag4 = tag4_entry.get()
                if tag1 == "" and tag2 == "" and tag3 == "" and tag4 == "":
                    tag_tracking_en = False
+               else:
+                   tag_tracking_text = "Loading Tags..."
                if tag1 == "":
                    tag1_tracking_en = False
                if tag2 == "":

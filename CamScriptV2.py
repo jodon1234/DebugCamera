@@ -147,6 +147,11 @@ def setup():
                global GATEWAY
                global pre_time
                global cam_name
+               global tag_tracking_en
+               global tag1_tracking_en
+               global tag2_tracking_en
+               global tag3_tracking_en
+               global tag4_tracking_en
                global tag1
                global tag2
                global tag3
@@ -160,6 +165,16 @@ def setup():
                tag2 = tag2_entry.get()
                tag3 = tag3_entry.get()
                tag4 = tag4_entry.get()
+               if tag1 == "" and tag2 == "" and tag3 == "" and tag4 == "":
+                   tag_tracking_en = False
+               if tag1 == "":
+                   tag1_tracking_en = False
+               if tag2 == "":
+                   tag2_tracking_en = False
+               if tag3 == "":
+                   tag3_tracking_en = False
+               if tag4 == "":
+                   tag4_tracking_en = False
                window.destroy()
 
        radio_var = IntVar()
@@ -168,7 +183,7 @@ def setup():
        #FG Color #68da7b
        PI_IP = get_ip()
        logging.info(PI_IP)
-       text_1 = customtkinter.CTkTextbox(master=window, width=370, height=95, bg_color="#454545", fg_color="#454545", text_color="#ffffff", font=("Arial", 12))
+       text_1 = customtkinter.CTkTextbox(master=window, width=400, height=95, bg_color="#454545", fg_color="#454545", text_color="#ffffff", font=("Arial", 12))
        text_1.pack(pady=10, padx=10)
        text_1.insert("0.0", " Please make sure the camera is connected to the Gentex \n Corporate network either over WIFI or Ethernet. Refer to \n the Readme in the camera root directory or on the flash \n drive for setup guide. \n CAM ADDRESS: "+ PI_IP)
 
@@ -539,7 +554,7 @@ def main():
            picam2.set_controls({"AfMode": controls.AfModeEnum.Continuous})
        try:
            #PLC Communication
-           time.sleep(.2)
+           time.sleep(.1)
            response = plc.read(cam_name + ".Trigger_OUT")
            heartbeat = plc.read(cam_name + ".Heartbeat_OUT")
            logging.info(f"Heartbeat_OUT: {heartbeat.value}")

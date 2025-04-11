@@ -254,7 +254,7 @@ def setup():
            bg_color="#343635",
            fg_color="#2e7039",
            )
-       pre_trig_time.place(x=220, y=140)
+       pre_trig_time.place(x=250, y=140)
        pre_trig_time.insert(0, "30")
 
        tag1_entry = customtkinter.CTkEntry(
@@ -337,7 +337,7 @@ def setup():
            fg_color="#2e7039",
            command=done_pressed
            )
-       done_button.place(x=150, y=340)
+       done_button.place(x=250, y=340)
 
        test_button = customtkinter.CTkButton(
            master=window,
@@ -407,7 +407,7 @@ def setup():
            bg_color="#343635",
            fg_color="#343635",
            )
-       time_label.place(x=220, y=115)
+       time_label.place(x=250, y=115)
 
        tag_tracking_label = customtkinter.CTkLabel(
            master=window,

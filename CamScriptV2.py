@@ -107,7 +107,7 @@ def get_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.settimeout(0)
     try:
-        # doesn't even have to be reachable
+        # Doesn't even have to be reachable
         s.connect(('10.254.254.254', 1))
         IP = s.getsockname()[0]
     except Exception:
@@ -287,7 +287,7 @@ def setup():
            bg_color="#343635",
            fg_color="#2e7039",
            )
-       tag2_entry.place(x=400, y=170)
+       tag2_entry.place(x=400, y=180)
 
        tag3_entry = customtkinter.CTkEntry(
            master=window,
@@ -303,7 +303,7 @@ def setup():
            bg_color="#343635",
            fg_color="#2e7039",
            )
-       tag3_entry.place(x=400, y=200)
+       tag3_entry.place(x=400, y=220)
 
        tag4_entry = customtkinter.CTkEntry(
            master=window,
@@ -319,7 +319,7 @@ def setup():
            bg_color="#343635",
            fg_color="#2e7039",
            )
-       tag4_entry.place(x=400, y=230)
+       tag4_entry.place(x=400, y=260)
 
        done_button = customtkinter.CTkButton(
            master=window,

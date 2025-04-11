@@ -60,9 +60,9 @@ hostname = socket.gethostname()
 logging.info("Hostname: " + hostname)
 tag_tracking_en = True
 tag1_tracking_en = True
-tag2_tracking_en = False
-tag3_tracking_en = False
-tag4_tracking_en = False
+tag2_tracking_en = True
+tag3_tracking_en = True
+tag4_tracking_en = True
 tag1 = "Dial_CurrentPosition"
 tag_tracking_text = "Loading Tags..."
 #Give the camera some time to connect to the netowrk
@@ -493,7 +493,7 @@ try:
    fpsSTR = str(fps)
    picam2 = Picamera2()
    colour = (0, 255, 0, 255)
-   origin = (0, 30)
+   origin = (0, 60)
    font = cv2.FONT_HERSHEY_SIMPLEX
    scale = 1
    thickness = 2
@@ -564,10 +564,10 @@ def main():
            filename_temp = plc.read(cam_name + ".Filename")
            if tag_tracking_en:
                try:
-                   tag1_textfull = "null"
-                   tag2_textfull = "null"
-                   tag3_textfull = "null"
-                   tag4_textfull = "null"
+                   tag1_textfull = ""
+                   tag2_textfull = ""
+                   tag3_textfull = ""
+                   tag4_textfull = ""
                    if tag1_tracking_en:
                         tag1text = plc.read(tag1)
                         tag1_textfull = (tag1+ ": " + str(tag1text.value))

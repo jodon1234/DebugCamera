@@ -64,7 +64,7 @@ tag2_tracking_en = True
 tag3_tracking_en = True
 tag4_tracking_en = True
 #Give the camera some time to connect to the netowrk
-time.sleep(5)
+time.sleep(8)
 
 def test_connection(IP, name):
     status1 = "Failed"

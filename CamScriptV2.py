@@ -7,12 +7,10 @@
 # Author: Jordan Shrauger
 try:
    import os
-   import subprocess
    import logging
    from logging.handlers import RotatingFileHandler
    from tkinter import *
    import customtkinter
-   import signal
    import socket
    import time
    from datetime import datetime
@@ -473,17 +471,6 @@ if setup_req:
 if input_mode == 3:
    #Set ethernet configuration
    logging.info("Applying config...")
-   #subprocess.run(['sudo','ifconfig', 'eth0', 'down'], stdout = subprocess.DEVNULL)
-   #time.sleep(2)
-   #subprocess.run(['sudo','ifconfig', 'eth0', PI_IP], stdout = subprocess.DEVNULL)
-   #subprocess.run(['sudo','ifconfig', 'eth0', 'netmask', SUBNET], stdout = subprocess.DEVNULL)
-   #subprocess.run(['sudo', 'ip','route', 'del', 'default', 'eth0'], stdout = subprocess.DEVNULL)
-   #time.sleep(1)
-   #subprocess.run(['sudo', 'ip', 'route', 'add', 'default', 'via', GATEWAY, 'dev', 'eth0'], stdout = subprocess.DEVNULL)
-   #time.sleep(2)
-   #subprocess.run(['sudo','ifconfig', 'eth0', 'up'], stdout = subprocess.DEVNULL)
-   #time.sleep(1)
-
 # Start Camera
 try:
    GPIO.setmode(GPIO.BCM)
@@ -593,6 +580,7 @@ def main():
 
            if response.value == 1:
                 #Save and convert buffer to mp4 upon trigger
+                logging.info("Capture Triggered")
                 response = 0
                 plc.write(cam_name + ".Busy", 1)
                 encoder.output.stop()

@@ -523,13 +523,16 @@ def main():
    while input_mode == 3:
        try:
            if plc_initialize:
+               logging.info("Starting PLC connection at: " + PLC_IP)
                plc = LogixDriver(PLC_IP)
+               logging.info("Opening connection...")
                plc.open()
-               logging.info("Starting PLC connection")
+               logging.info("Connection opened")
                plc_initialize = False
        except:
            logging.error("Failed to connect to PLC retrying...")
            time.sleep(5)
+           plc_initialize = True
 
        if cam_start:
            #Start recording

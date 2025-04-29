@@ -61,6 +61,7 @@ tag1_tracking_en = True
 tag2_tracking_en = True
 tag3_tracking_en = True
 tag4_tracking_en = True
+tag_tracking_text = ""
 #Give the camera some time to connect to the netowrk
 time.sleep(8)
 
@@ -609,6 +610,7 @@ def main():
        except:
            logging.error("Connection lost, retrying...")
            time.sleep(5)
+           plc_initialize = True
    #Internal Trigger
    while input_mode == 2:
        if cam_start:

@@ -500,8 +500,6 @@ try:
    picam2.configure(video_config)
    encoder = H264Encoder()
    encoder.output = CircularOutput(buffersize=int(fps * (dur + 0.2)), outputtofile=False)
-   picam2.start()
-   picam2.start_encoder(encoder)
 except:
    logging.error("Failed to start camera. Check if the camera is connected and configured properly.")
 
@@ -539,6 +537,8 @@ def main():
            #Start recording
            current_datetime = datetime.now().strftime("%Y-%m-%d-%H.%M.%S")
            TempName="Temp" + ".h264"
+           picam2.start()
+           picam2.start_encoder(encoder)
            encoder.output.fileoutput = TempName
            encoder.output.start()
            logging.info("Cam Started")
@@ -605,6 +605,7 @@ def main():
                 plc.write(cam_name + ".Trigger_OUT", 0)
                 plc.write(cam_name + ".Busy", 0)
                 logging.info("Done")
+                picam2.stop()
                 #Set cam_start to true to initialize the camera again
                 cam_start = True
        except:

@@ -490,7 +490,6 @@ try:
 
        with MappedArray(overlay, "main") as m:
             cv2.putText(m.array, tag_tracking_text, origin, font, scale, colour, thickness)
-
    picam2.pre_callback = overlay
    preview_config = picam2.create_preview_configuration(main={"size": (640, 480)}, controls={'FrameRate': 15})
    picam2.configure(preview_config)
@@ -500,6 +499,8 @@ try:
    picam2.configure(video_config)
    encoder = H264Encoder()
    encoder.output = CircularOutput(buffersize=int(fps * (dur + 0.2)), outputtofile=False)
+
+
 except:
    logging.error("Failed to start camera. Check if the camera is connected and configured properly.")
 
@@ -535,10 +536,11 @@ def main():
 
        if cam_start:
            #Start recording
-           current_datetime = datetime.now().strftime("%Y-%m-%d-%H.%M.%S")
-           TempName="Temp" + ".h264"
+
            picam2.start()
            picam2.start_encoder(encoder)
+           current_datetime = datetime.now().strftime("%Y-%m-%d-%H.%M.%S")
+           TempName="Temp" + ".h264"
            encoder.output.fileoutput = TempName
            encoder.output.start()
            logging.info("Cam Started")
@@ -605,8 +607,9 @@ def main():
                 plc.write(cam_name + ".Trigger_OUT", 0)
                 plc.write(cam_name + ".Busy", 0)
                 logging.info("Done")
-                picam2.stop()
                 #Set cam_start to true to initialize the camera again
+                picam2.stop_encoder(encoder)
+                picam2.stop()
                 cam_start = True
        except:
            logging.error("Connection lost, retrying...")

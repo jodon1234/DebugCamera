@@ -539,7 +539,6 @@ def main():
 
            picam2.start()
            picam2.start_encoder(encoder)
-           current_datetime = datetime.now().strftime("%Y-%m-%d-%H.%M.%S")
            TempName="Temp" + ".h264"
            encoder.output.fileoutput = TempName
            encoder.output.start()
@@ -589,6 +588,7 @@ def main():
                 logging.info("Capture Triggered")
                 response = 0
                 plc.write(cam_name + ".Busy", 1)
+                current_datetime = datetime.now().strftime("%Y-%m-%d-%H.%M.%S")
                 encoder.output.stop()
                 logging.info("Converting file to .MP4")
                 logging.info(filename_temp.value)
@@ -618,7 +618,6 @@ def main():
    #Internal Trigger
    while input_mode == 2:
        if cam_start:
-           current_datetime = datetime.now().strftime("%Y-%m-%d-%H.%M.%S")
            TempName="Temp" + ".h264"
            encoder.output.fileoutput = TempName
            logging.info("Cam Started")
@@ -628,6 +627,7 @@ def main():
        trigger = GPIO.input(17)
        if trigger:
            response = 0
+           current_datetime = datetime.now().strftime("%Y-%m-%d-%H.%M.%S")
            encoder.output.stop()
            logging.info("Converting file to .MP4")
            logging.info(TempName)
@@ -641,7 +641,6 @@ def main():
    #External Trigger
    while input_mode == 1:
        if cam_start:
-           current_datetime = datetime.now().strftime("%Y-%m-%d-%H.%M.%S")
            TempName="Temp" + ".h264"
            encoder.output.fileoutput = TempName
            logging.info("Cam Started")
@@ -651,6 +650,7 @@ def main():
        trigger = GPIO.input(4)
        if trigger:
            response = 0
+           current_datetime = datetime.now().strftime("%Y-%m-%d-%H.%M.%S")
            encoder.output.stop()
            logging.info("Converting file to .MP4")
            logging.info(TempName)

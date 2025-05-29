@@ -618,48 +618,66 @@ def main():
    #Internal Trigger
    while input_mode == 2:
        if cam_start:
+           picam2.start()
+           picam2.start_encoder(encoder)
            TempName="Temp" + ".h264"
            encoder.output.fileoutput = TempName
-           logging.info("Cam Started")
            encoder.output.start()
+           logging.info("Cam Started")
            cam_start = False
            picam2.set_controls({"AfMode": controls.AfModeEnum.Continuous})
        trigger = GPIO.input(17)
+       time.sleep(.2)
        if trigger:
+           logging.info("Capture Triggered")
            response = 0
            current_datetime = datetime.now().strftime("%Y-%m-%d-%H.%M.%S")
            encoder.output.stop()
            logging.info("Converting file to .MP4")
+           logging.info(filename_temp.value)
            logging.info(TempName)
            time.sleep(2)
-           cmd = 'ffmpeg -r '+ fpsSTR + ' -i ' + TempName + ' -c copy ' + current_datetime +'.mp4'
+           logging.info(filename)
+           cmd = 'ffmpeg -r '+ fpsSTR + ' -i ' + TempName + ' -c copy ' + filename +'.mp4'
            logging.info(cmd)
            os.system(cmd)
            time.sleep(10)
            logging.info("Done")
+           #Set cam_start to true to initialize the camera again
+           picam2.stop_encoder(encoder)
+           picam2.stop()
            cam_start = True
    #External Trigger
    while input_mode == 1:
        if cam_start:
+           picam2.start()
+           picam2.start_encoder(encoder)
            TempName="Temp" + ".h264"
            encoder.output.fileoutput = TempName
-           logging.info("Cam Started")
            encoder.output.start()
+           logging.info("Cam Started")
            cam_start = False
            picam2.set_controls({"AfMode": controls.AfModeEnum.Continuous})
        trigger = GPIO.input(4)
+       time.sleep(.2)
        if trigger:
+           logging.info("Capture Triggered")
            response = 0
            current_datetime = datetime.now().strftime("%Y-%m-%d-%H.%M.%S")
            encoder.output.stop()
            logging.info("Converting file to .MP4")
+           logging.info(filename_temp.value)
            logging.info(TempName)
            time.sleep(2)
-           cmd = 'ffmpeg -r '+ fpsSTR + ' -i ' + TempName + ' -c copy ' + current_datetime +'.mp4'
+           logging.info(filename)
+           cmd = 'ffmpeg -r '+ fpsSTR + ' -i ' + TempName + ' -c copy ' + filename +'.mp4'
            logging.info(cmd)
            os.system(cmd)
            time.sleep(10)
            logging.info("Done")
+           #Set cam_start to true to initialize the camera again
+           picam2.stop_encoder(encoder)
+           picam2.stop()
            cam_start = True
 
 if __name__ == "__main__":

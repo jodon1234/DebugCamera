@@ -13,6 +13,8 @@ try:
     from logging.handlers import RotatingFileHandler
     import socket
     import time
+    import platform
+    import psutil
     from datetime import datetime
     from pycomm3 import LogixDriver
     from pycomm3.logger import configure_default_logger
@@ -109,6 +111,22 @@ def get_ip():
         s.close()
     return IP
 
+def get_system_info():
+    try:
+        info = {
+            "Hostname": socket.gethostname(),
+            "OS": platform.platform(),
+            "Python": platform.python_version(),
+            "CPU": platform.processor(),
+            "CPU Cores": psutil.cpu_count(logical=True),
+            "RAM": f"{round(psutil.virtual_memory().total / (1024**3), 2)} GB",
+            "Disk": f"{round(psutil.disk_usage('/').total / (1024**3), 2)} GB",
+            "Uptime": f"{int(time.time() - psutil.boot_time()) // 3600}h {(int(time.time() - psutil.boot_time()) % 3600) // 60}m"
+        }
+    except Exception as e:
+        info = {"Error": str(e)}
+    return info
+
 # --- Web UI using Flask ---
 app = Flask(__name__)
 
@@ -128,6 +146,10 @@ SETUP_FORM = """
         .btn { margin-top: 20px; padding: 10px 30px; background: #2e7039; color: #fff; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; }
         .btn:hover { background: #68da7b; color: #343635; }
         .status { margin-top: 10px; color: #68da7b; }
+        .sysinfo { margin-top: 30px; background: #2e7039; color: #fff; padding: 15px; border-radius: 8px; }
+        .sysinfo h3 { margin-top: 0; color: #68da7b; }
+        .sysinfo table { width: 100%; color: #fff; }
+        .sysinfo td { padding: 4px 8px; }
     </style>
 </head>
 <body>
@@ -165,6 +187,14 @@ SETUP_FORM = """
         {% if status2 %}
             <div class="status">AOI: {{ status2 }}</div>
         {% endif %}
+        <div class="sysinfo">
+            <h3>System Information</h3>
+            <table>
+            {% for k, v in sysinfo.items() %}
+                <tr><td><b>{{ k }}</b></td><td>{{ v }}</td></tr>
+            {% endfor %}
+            </table>
+        </div>
     </div>
 </body>
 </html>
@@ -200,6 +230,7 @@ def setup_web():
             setup_req = False
             return redirect(url_for("setup_done"))
 
+    sysinfo = get_system_info()
     return render_template_string(
         SETUP_FORM,
         pi_ip=get_ip(),
@@ -212,8 +243,10 @@ def setup_web():
         tag4=tag4,
         input_mode=input_mode,
         status1=status1,
-        status2=status2
+        status2=status2,
+        sysinfo=sysinfo
     )
+
 
 @app.route("/done")
 def setup_done():
@@ -434,3 +467,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

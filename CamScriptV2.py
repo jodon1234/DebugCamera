@@ -280,14 +280,19 @@ try:
     fps = 40
     fpsSTR = str(fps)
     picam2 = Picamera2()
-    colour = (0, 255, 0, 255)
-    origin = (0, 60)
+    text_color_bg = (0, 0, 0, 0)
+    color = (0, 255, 0, 255)
+    origin = (0, 20)
     font = cv2.FONT_HERSHEY_SIMPLEX
     scale = 1
     thickness = 2
     def overlay(overlay):
         with MappedArray(overlay, "main") as m:
-            cv2.putText(m.array, tag_tracking_text, origin, font, scale, colour, thickness)
+            x, y = origin
+            text_size, _ = cv2.getTextSize(tag_tracking_text, font, scale, thickness)
+            text_w, text_h = text_size
+            cv2.rectangle(m.array, origin, (x + text_w, y + text_h), text_color_bg, -1)
+            cv2.putText(m.array, tag_tracking_text, (x, y + text_h + scale - 1), font, scale, color, thickness)
     picam2.pre_callback = overlay
     preview_config = picam2.create_preview_configuration(main={"size": (640, 480)}, controls={'FrameRate': 15})
     picam2.configure(preview_config)

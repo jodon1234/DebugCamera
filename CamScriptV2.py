@@ -51,6 +51,7 @@ SUBNET = '255.255.255.0'
 GATEWAY = '192.168.1.1'
 Captures = 0
 pre_time = 90
+fps = 30
 cam_name = 'Cam1'
 hostname = socket.gethostname()
 logging.info("Hostname: " + hostname)
@@ -158,7 +159,7 @@ SETUP_FORM = """
     <div class="container">
         <h2>Camera Setup</h2>
         <p>Please make sure the camera is connected to the Gentex Corporate network either over WIFI or Ethernet.<br>
-        Refer to the Readme in the camera root directory or on the flash drive for setup guide.<br>
+        Refer to the Readme in the camera root directory or on the flash drive for setup guide. FTP LOGIN USER: admin PASS: password<br>
         <b>CAM ADDRESS: {{ pi_ip }}</b></p>
         <form method="post">
             <label>PLC Address</label>
@@ -167,6 +168,8 @@ SETUP_FORM = """
             <input type="text" name="cam_name" value="{{ cam_name }}" required>
             <label>Record Time (seconds)</label>
             <input type="number" name="pre_time" value="{{ pre_time }}" min="1" required>
+            <label>FPS (30 recommended, higher than 60 may cause instability)</label>
+            <input type="number" name="fps" value="{{ fps }}" min="15" required>
             <label>Tag 1</label>
             <input type="text" name="tag1" value="{{ tag1 }}">
             <label>Tag 2</label>
@@ -204,7 +207,7 @@ SETUP_FORM = """
 
 @app.route("/", methods=["GET", "POST"])
 def setup_web():
-    global setup_req, PLC_IP, SUBNET, GATEWAY, pre_time, cam_name, tag_tracking_text
+    global setup_req, PLC_IP, SUBNET, GATEWAY, pre_time, cam_name, tag_tracking_text, fps
     global tag_tracking_en, tag1_tracking_en, tag2_tracking_en, tag3_tracking_en, tag4_tracking_en
     global tag1, tag2, tag3, tag4, input_mode
 
@@ -213,6 +216,7 @@ def setup_web():
         PLC_IP = request.form.get("plc_addr", PLC_IP)
         cam_name = request.form.get("cam_name", cam_name)
         pre_time = int(request.form.get("pre_time", pre_time))
+        fps = int(request.form.get("fps", fps))
         tag1 = request.form.get("tag1", "")
         tag2 = request.form.get("tag2", "")
         tag3 = request.form.get("tag3", "")
@@ -239,6 +243,7 @@ def setup_web():
         plc_addr=PLC_IP,
         cam_name=cam_name,
         pre_time=pre_time,
+        fps=fps,
         tag1=tag1,
         tag2=tag2,
         tag3=tag3,
@@ -277,7 +282,6 @@ try:
     GPIO.setup(4, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
     GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
     dur = pre_time
-    fps = 40
     fpsSTR = str(fps)
     picam2 = Picamera2()
     text_color_bg = (0, 0, 0, 0)
@@ -312,12 +316,12 @@ def main():
     global tag2_tracking_en
     global tag3_tracking_en
     global tag4_tracking_en
+    global Captures
     global tag1
     global tag2
     global tag3
     global tag4
     global tag_tracking_text
-    global Captures
     plc_initialize = True
     trigger = False
     heartbeat = 0

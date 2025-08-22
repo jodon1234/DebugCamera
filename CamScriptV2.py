@@ -49,6 +49,7 @@ PLC_IP = '192.168.2.10'
 PI_IP = '192.168.2.248'
 SUBNET = '255.255.255.0'
 GATEWAY = '192.168.1.1'
+Captures = 0
 pre_time = 90
 cam_name = 'Cam1'
 hostname = socket.gethostname()
@@ -121,7 +122,8 @@ def get_system_info():
             "CPU Cores": psutil.cpu_count(logical=True),
             "RAM": f"{round(psutil.virtual_memory().total / (1024**3), 2)} GB",
             "Disk": f"{round(psutil.disk_usage('/').total / (1024**3), 2)} GB",
-            "Uptime": f"{int(time.time() - psutil.boot_time()) // 3600}h {(int(time.time() - psutil.boot_time()) % 3600) // 60}m"
+            "Uptime": f"{int(time.time() - psutil.boot_time()) // 3600}h {(int(time.time() - psutil.boot_time()) % 3600) // 60}m",
+            "Captures:": Captures
         }
     except Exception as e:
         info = {"Error": str(e)}
@@ -430,6 +432,7 @@ def main():
             os.system(cmd)
             time.sleep(10)
             logging.info("Done")
+            Captures = Captures + 1
             picam2.stop_encoder(encoder)
             picam2.stop()
             cam_start = True

@@ -312,6 +312,7 @@ def main():
     global tag3
     global tag4
     global tag_tracking_text
+    global Captures
     plc_initialize = True
     trigger = False
     heartbeat = 0

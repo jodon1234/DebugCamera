@@ -397,6 +397,7 @@ def main():
                 plc.write(cam_name + ".Trigger_OUT", 0)
                 plc.write(cam_name + ".Busy", 0)
                 logging.info("Done")
+                Captures = Captures + 1
                 picam2.stop_encoder(encoder)
                 picam2.stop()
                 cam_start = True
@@ -464,6 +465,7 @@ def main():
             os.system(cmd)
             time.sleep(10)
             logging.info("Done")
+            Captures = Captures + 1
             picam2.stop_encoder(encoder)
             picam2.stop()
             cam_start = True

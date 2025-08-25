@@ -194,7 +194,8 @@ SETUP_FORM = """
     <div class="container">
         <h2>Camera Setup</h2>
         <p>Please make sure the camera is connected to the Gentex Corporate network either over WIFI or Ethernet.<br>
-        Refer to the Readme in the camera root directory or on the flash drive for setup guide. FTP LOGIN USER: admin PASS: password<br>
+        Refer to the Readme in the camera root directory or on the flash drive for setup guide.<br>
+        FTP LOGIN USER: admin PASS: password<br>
         <a href="https://github.com/jodon1234/DebugCamera">More Info</a> <br>
         <b>CAM ADDRESS: {{ pi_ip }}</b></p>
         <form method="post">

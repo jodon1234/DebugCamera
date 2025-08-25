@@ -133,6 +133,40 @@ def get_system_info():
 # --- Web UI using Flask ---
 app = Flask(__name__)
 
+# Add a new route and update the SETUP_FORM to display the log file in the web UI.
+
+# --- Add this route after the existing Flask routes ---
+@app.route("/log")
+def view_log():
+    try:
+        with open(logFile, "r") as f:
+            log_content = f.read()
+    except Exception as e:
+        log_content = f"Could not read log file: {e}"
+    return render_template_string("""
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Debug Camera Log</title>
+        <style>
+            body { background: #343635; color: #fff; font-family: Arial, sans-serif; }
+            .container { width: 90%; margin: 40px auto; background: #454545; padding: 30px; border-radius: 10px; }
+            pre { background: #222; color: #68da7b; padding: 15px; border-radius: 8px; max-height: 600px; overflow-y: auto; }
+            a { color: #68da7b; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h2>Debug Camera Log</h2>
+            <a href="{{ url_for('setup_web') }}">Back to Setup</a>
+            <pre>{{ log_content }}</pre>
+        </div>
+    </body>
+    </html>
+    """, log_content=log_content)
+
+# --- Update SETUP_FORM to add a link to the log viewer ---
 SETUP_FORM = """
 <!DOCTYPE html>
 <html lang="en">
@@ -153,6 +187,7 @@ SETUP_FORM = """
         .sysinfo h3 { margin-top: 0; color: #68da7b; }
         .sysinfo table { width: 100%; color: #fff; }
         .sysinfo td { padding: 4px 8px; }
+        .log-link { margin-top: 20px; display: block; color: #68da7b; text-align: right; }
     </style>
 </head>
 <body>
@@ -160,6 +195,7 @@ SETUP_FORM = """
         <h2>Camera Setup</h2>
         <p>Please make sure the camera is connected to the Gentex Corporate network either over WIFI or Ethernet.<br>
         Refer to the Readme in the camera root directory or on the flash drive for setup guide. FTP LOGIN USER: admin PASS: password<br>
+        <a href="https://github.com/jodon1234/DebugCamera">More Info</a> <br>
         <b>CAM ADDRESS: {{ pi_ip }}</b></p>
         <form method="post">
             <label>PLC Address</label>
@@ -186,6 +222,7 @@ SETUP_FORM = """
             <button class="btn" type="submit" name="action" value="done">Done</button>
             <button class="btn" type="submit" name="action" value="test">Test Connection</button>
         </form>
+        <a class="log-link" href="{{ url_for('view_log') }}" target="_blank">View Log File</a>
         {% if status1 %}
             <div class="status">PLC: {{ status1 }}</div>
         {% endif %}

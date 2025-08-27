@@ -7,9 +7,6 @@
 # REV: 1.2 (Web UI)
 # Author: Jordan Shrauger
 
-from http.client import RESET_CONTENT
-
-
 try:
     import os
     import logging
@@ -48,8 +45,8 @@ logging.info("Starting...")
 cam_start = True
 setup_req = True
 input_mode = 0
-PLC_IP = '192.168.2.10'
-PI_IP = '192.168.2.248'
+PLC_IP = '999.999.999.999'
+PI_IP = '999.999.999.999'
 SUBNET = '255.255.255.0'
 GATEWAY = '192.168.1.1'
 Camera_Status = "Initializing"
@@ -228,7 +225,8 @@ SETUP_FORM = """
             <button class="btn" type="submit" name="action" value="done">Done</button>
             <button class="btn" type="submit" name="action" value="test">Test Connection</button>
             <button class="btn" type="submit" name="action" value="trig">Manual Trigger</button><br>
-            <button class="btn" type="submit" name="action" value="reset">Reset Captures</button><br><br>
+            <button class="btn" type="submit" name="action" value="reset">Reset Captures</button>
+            <button style="background-color: red; color: white;" class="btn" type="submit" name="action" value="reboot">REBOOT CAMERA</button><br><br>
             <b style="color:red;">CAMERA STATUS: {{ Camera_Status }}</b></p>
         </form>
         <a class="log-link" href="{{ url_for('view_log') }}" target="_blank">View Log File</a>
@@ -287,6 +285,9 @@ def setup_web():
         elif request.form.get("action") == "reset":
             Captures = 0
             logging.info("Captures count reset")
+        elif request.form.get("action") == "reboot":
+            logging.info("Reboot Requested from Web UI")
+            os.system("sudo reboot")
 
     sysinfo = get_system_info()
     return render_template_string(

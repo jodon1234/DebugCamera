@@ -7,6 +7,9 @@
 # REV: 1.2 (Web UI)
 # Author: Jordan Shrauger
 
+from http.client import RESET_CONTENT
+
+
 try:
     import os
     import logging
@@ -224,7 +227,8 @@ SETUP_FORM = """
             </div>
             <button class="btn" type="submit" name="action" value="done">Done</button>
             <button class="btn" type="submit" name="action" value="test">Test Connection</button>
-            <button class="btn" type="submit" name="action" value="trig">Manual Trigger</button><br><br>
+            <button class="btn" type="submit" name="action" value="trig">Manual Trigger</button><br>
+            <button class="btn" type="submit" name="action" value="reset">Reset Captures</button><br><br>
             <b style="color:red;">CAMERA STATUS: {{ Camera_Status }}</b></p>
         </form>
         <a class="log-link" href="{{ url_for('view_log') }}" target="_blank">View Log File</a>
@@ -249,7 +253,7 @@ SETUP_FORM = """
 
 @app.route("/", methods=["GET", "POST"])
 def setup_web():
-    global setup_req, PLC_IP, SUBNET, GATEWAY, pre_time, cam_name, tag_tracking_text, fps, Camera_Status, Manual_Trig
+    global setup_req, PLC_IP, SUBNET, GATEWAY, pre_time, cam_name, tag_tracking_text, fps, Camera_Status, Manual_Trig, Captures
     global tag_tracking_en, tag1_tracking_en, tag2_tracking_en, tag3_tracking_en, tag4_tracking_en
     global tag1, tag2, tag3, tag4, input_mode
 
@@ -280,6 +284,9 @@ def setup_web():
         elif request.form.get("action") == "trig":
             Manual_Trig = True
             logging.info("Manual Trigger Requested from Web UI")
+        elif request.form.get("action") == "reset":
+            Captures = 0
+            logging.info("Captures count reset")
 
     sysinfo = get_system_info()
     return render_template_string(

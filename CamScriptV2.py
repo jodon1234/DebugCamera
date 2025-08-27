@@ -50,6 +50,7 @@ PI_IP = '192.168.2.248'
 SUBNET = '255.255.255.0'
 GATEWAY = '192.168.1.1'
 Camera_Status = "Initializing"
+Manual_Trig = False
 Captures = 0
 pre_time = 90
 fps = 30
@@ -217,12 +218,13 @@ SETUP_FORM = """
             <label>Tag 4</label>
             <input type="text" name="tag4" value="{{ tag4 }}">
             <div class="radio-group">
+                <label><input type="radio" name="input_mode" value="3" {% if input_mode==3 %}checked{% endif %}> Ethernet</label>
                 <label><input type="radio" name="input_mode" value="1" {% if input_mode==1 %}checked{% endif %}> External</label>
                 <label><input type="radio" name="input_mode" value="2" {% if input_mode==2 %}checked{% endif %}> Internal</label>
-                <label><input type="radio" name="input_mode" value="3" {% if input_mode==3 %}checked{% endif %}> Ethernet</label>
             </div>
             <button class="btn" type="submit" name="action" value="done">Done</button>
-            <button class="btn" type="submit" name="action" value="test">Test Connection</button><br><br>
+            <button class="btn" type="submit" name="action" value="test">Test Connection</button>
+            <button class="btn" type="submit" name="action" value="trig">Manual Trigger</button><br><br>
             <b style="color:red;">CAMERA STATUS: {{ Camera_Status }}</b></p>
         </form>
         <a class="log-link" href="{{ url_for('view_log') }}" target="_blank">View Log File</a>
@@ -247,7 +249,7 @@ SETUP_FORM = """
 
 @app.route("/", methods=["GET", "POST"])
 def setup_web():
-    global setup_req, PLC_IP, SUBNET, GATEWAY, pre_time, cam_name, tag_tracking_text, fps, Camera_Status
+    global setup_req, PLC_IP, SUBNET, GATEWAY, pre_time, cam_name, tag_tracking_text, fps, Camera_Status, Manual_Trig
     global tag_tracking_en, tag1_tracking_en, tag2_tracking_en, tag3_tracking_en, tag4_tracking_en
     global tag1, tag2, tag3, tag4, input_mode
 
@@ -275,6 +277,9 @@ def setup_web():
         elif request.form.get("action") == "done":
             setup_req = False
             #return redirect(url_for("setup_done"))
+        elif request.form.get("action") == "trig":
+            Manual_Trig = True
+            logging.info("Manual Trigger Requested from Web UI")
 
     sysinfo = get_system_info()
     return render_template_string(
@@ -364,6 +369,7 @@ def main():
     global tag4
     global tag_tracking_text
     global Camera_Status
+    global Manual_Trig
     plc_initialize = True
     trigger = False
     heartbeat = 0
@@ -430,8 +436,9 @@ def main():
                     tag_tracking_text = "Tag Load Error"
                     Camera_Status = "Tag Tracking Error, Refer to Manual"
                     logging.error("Tag not found")
-            if response.value == 1:
+            if response.value == 1 or Manual_Trig:
                 logging.info("Capture Triggered")
+                Manual_Trig = False
                 response = 0
                 plc.write(cam_name + ".Busy", 1)
                 current_datetime = datetime.now().strftime("%Y-%m-%d-%H.%M.%S")

@@ -121,6 +121,8 @@ def get_ip():
 def get_system_info():
     try:
         info = {
+            "Captures:": Captures,
+            "Last Capture:": Last_Capture,
             "Hostname": socket.gethostname(),
             "OS": platform.platform(),
             "Python": platform.python_version(),
@@ -129,9 +131,8 @@ def get_system_info():
             "RAM": f"{round(psutil.virtual_memory().total / (1024**3), 2)} GB",
             "Disk": f"{round(psutil.disk_usage('/').total / (1024**3), 2)} GB",
             "Uptime": f"{int(time.time() - psutil.boot_time()) // 3600}h {(int(time.time() - psutil.boot_time()) % 3600) // 60}m",
-            "Dropped Connections:": Dropped_Connections,
-            "Captures:": Captures,
-            "Last Capture:": Last_Capture
+            "Dropped Connections:": Dropped_Connections
+
         }
     except Exception as e:
         info = {"Error": str(e)}
@@ -407,14 +408,14 @@ def main():
             plc_initialize = True
 
         if cam_start:
-            #picam2.start()
-            #picam2.start_encoder(encoder)
+            picam2.start()
+            picam2.start_encoder(encoder)
             TempName="Temp" + ".h264"
-            #encoder.output.fileoutput = TempName
-            #encoder.output.start()
+            encoder.output.fileoutput = TempName
+            encoder.output.start()
             logging.info("Cam Started")
             cam_start = False
-            #picam2.set_controls({"AfMode": controls.AfModeEnum.Continuous})
+            picam2.set_controls({"AfMode": controls.AfModeEnum.Continuous})
         try:
             time.sleep(Poll_Rate)
             response = plc.read(cam_name + ".Trigger_OUT")

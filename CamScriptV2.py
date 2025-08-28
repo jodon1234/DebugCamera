@@ -52,6 +52,7 @@ GATEWAY = '192.168.1.1'
 Camera_Status = "Initializing"
 Manual_Trig = False
 Captures = 0
+Dropped_Connections = 0
 pre_time = 90
 fps = 30
 cam_name = 'Cam1'
@@ -126,6 +127,7 @@ def get_system_info():
             "RAM": f"{round(psutil.virtual_memory().total / (1024**3), 2)} GB",
             "Disk": f"{round(psutil.disk_usage('/').total / (1024**3), 2)} GB",
             "Uptime": f"{int(time.time() - psutil.boot_time()) // 3600}h {(int(time.time() - psutil.boot_time()) % 3600) // 60}m",
+            "Dropped Connections:": Dropped_Connections,
             "Captures:": Captures
         }
     except Exception as e:
@@ -371,6 +373,7 @@ def main():
     global tag3_tracking_en
     global tag4_tracking_en
     global Captures
+    global Dropped_Connections
     global tag1
     global tag2
     global tag3
@@ -398,14 +401,14 @@ def main():
             plc_initialize = True
 
         if cam_start:
-            picam2.start()
-            picam2.start_encoder(encoder)
+            #picam2.start()
+            #picam2.start_encoder(encoder)
             TempName="Temp" + ".h264"
-            encoder.output.fileoutput = TempName
-            encoder.output.start()
+            #encoder.output.fileoutput = TempName
+            #encoder.output.start()
             logging.info("Cam Started")
             cam_start = False
-            picam2.set_controls({"AfMode": controls.AfModeEnum.Continuous})
+            #picam2.set_controls({"AfMode": controls.AfModeEnum.Continuous})
         try:
             time.sleep(.1)
             response = plc.read(cam_name + ".Trigger_OUT")
@@ -474,6 +477,7 @@ def main():
                 cam_start = True
         except Exception:
             logging.error("Connection lost, retrying...")
+            Dropped_Connections = Dropped_Connections + 1
             if Camera_Status != "Cam Name/AOI Error":
                 Camera_Status = "PLC Connection Lost"
             time.sleep(30)

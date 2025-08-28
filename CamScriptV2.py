@@ -46,8 +46,8 @@ cam_start = True
 setup_req = True
 input_mode = 0
 Poll_Rate = .1
-PLC_IP = '999.999.999.999'
-PI_IP = '999.999.999.999'
+PLC_IP = ''
+PI_IP = ''
 SUBNET = '255.255.255.0'
 GATEWAY = '192.168.1.1'
 Camera_Status = "Not Configured"
@@ -224,7 +224,7 @@ SETUP_FORM = """
             <label>Tag 4</label>
             <input type="text" name="tag4" value="{{ tag4 }}">
             <div class="radio-group">
-                <label><input type="radio" name="input_mode" value="3" {% if input_mode==3 %}checked{% endif %}> Ethernet</label>
+                <label><input type="radio" name="input_mode" value="3" checked {% if input_mode==3 %}checked{% endif %}> Ethernet</label>
                 <label><input type="radio" name="input_mode" value="1" {% if input_mode==1 %}checked{% endif %}> External</label>
                 <label><input type="radio" name="input_mode" value="2" {% if input_mode==2 %}checked{% endif %}> Internal</label>
             </div>

@@ -45,11 +45,12 @@ logging.info("Starting...")
 cam_start = True
 setup_req = True
 input_mode = 0
+Poll_Rate = .1
 PLC_IP = '999.999.999.999'
 PI_IP = '999.999.999.999'
 SUBNET = '255.255.255.0'
 GATEWAY = '192.168.1.1'
-Camera_Status = "Initializing"
+Camera_Status = "Not Configured"
 Manual_Trig = False
 Captures = 0
 Dropped_Connections = 0
@@ -280,6 +281,7 @@ def setup_web():
             status1, status2 = test_connection(PLC_IP, cam_name)
         elif request.form.get("action") == "done":
             setup_req = False
+            Camera_Status = "Initializing"
             #return redirect(url_for("setup_done"))
         elif request.form.get("action") == "trig":
             Manual_Trig = True
@@ -367,6 +369,7 @@ except Exception as e:
 
 def main():
     global cam_start
+    global Poll_Rate
     global tag_tracking_en
     global tag1_tracking_en
     global tag2_tracking_en
@@ -410,7 +413,7 @@ def main():
             cam_start = False
             #picam2.set_controls({"AfMode": controls.AfModeEnum.Continuous})
         try:
-            time.sleep(.1)
+            time.sleep(Poll_Rate)
             response = plc.read(cam_name + ".Trigger_OUT")
             if response.error:
                 Camera_Status = "Cam Name/AOI Error"

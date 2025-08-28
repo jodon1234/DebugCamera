@@ -53,6 +53,7 @@ GATEWAY = '192.168.1.1'
 Camera_Status = "Not Configured"
 Manual_Trig = False
 Captures = 0
+Last_Capture = "No Captures"
 Dropped_Connections = 0
 pre_time = 90
 fps = 30
@@ -129,7 +130,8 @@ def get_system_info():
             "Disk": f"{round(psutil.disk_usage('/').total / (1024**3), 2)} GB",
             "Uptime": f"{int(time.time() - psutil.boot_time()) // 3600}h {(int(time.time() - psutil.boot_time()) % 3600) // 60}m",
             "Dropped Connections:": Dropped_Connections,
-            "Captures:": Captures
+            "Captures:": Captures,
+            "Last Capture:": Last_Capture
         }
     except Exception as e:
         info = {"Error": str(e)}
@@ -376,6 +378,7 @@ def main():
     global tag3_tracking_en
     global tag4_tracking_en
     global Captures
+    global Last_Capture
     global Dropped_Connections
     global tag1
     global tag2
@@ -456,6 +459,7 @@ def main():
                 response = 0
                 plc.write(cam_name + ".Busy", 1)
                 current_datetime = datetime.now().strftime("%Y-%m-%d-%H.%M.%S")
+                Last_Capture = current_datetime
                 encoder.output.stop()
                 logging.info("Converting file to .MP4")
                 logging.info(filename_temp.value)

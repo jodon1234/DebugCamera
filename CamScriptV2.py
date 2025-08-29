@@ -4,9 +4,10 @@
 # This program is used to control the debug camera based on the Picamera2 library
 # This script records with a ring buffer meaning it is always recording but only saves recorded footage upon trigger from a PLC.
 #
-# REV: 1.2 (Web UI)
+# REV: 1.3 (Web UI)
 # Author: Jordan Shrauger
 
+#Imports
 try:
     import os
     import logging
@@ -32,6 +33,8 @@ try:
 except Exception as e:
     logging.error(f"Failed to import libraries: {e}")
 
+
+#Configure Logger
 log_formatter = logging.Formatter('%(asctime)s %(levelname)s %(funcName)s(%(lineno)d) %(message)s')
 logFile = 'DebugCamera.log'
 my_handler = RotatingFileHandler(logFile, mode='a', maxBytes=5*1024*1024, backupCount=2, encoding=None, delay=0)
@@ -42,6 +45,8 @@ app_log.setLevel(logging.INFO)
 app_log.addHandler(my_handler)
 logging.info("Starting...")
 
+
+#Setup Variables
 cam_start = True
 setup_req = True
 input_mode = 0
@@ -72,6 +77,7 @@ tag3 = ""
 tag4 = ""
 time.sleep(8)
 
+#Test the connection to the PLC and cam tag
 def test_connection(IP, name):
     status1 = "Failed"
     status2 = "Failed"
@@ -106,6 +112,7 @@ def test_connection(IP, name):
         status1 = "PLC Connection Failed"
         return status1, status2
 
+#Retrieve camera IP address
 def get_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.settimeout(0)
@@ -118,6 +125,7 @@ def get_ip():
         s.close()
     return IP
 
+#Get various system information
 def get_system_info():
     try:
         info = {

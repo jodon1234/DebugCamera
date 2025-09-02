@@ -38,9 +38,12 @@ def main():
         else:
             validIP = True
 
-
-    ip_label = tk.Label(root, text=f"Camera Setup:\n http://{ip_address}:5000", font=("Arial", 18), padx=20, pady=20)
-    ip_label.pack()
+    if validIP == False:
+        ip_label = tk.Label(root, text="Unable to retrieve IP address.", font=("Arial", 18), padx=20, pady=20)
+        ip_label.pack()
+    else:
+        ip_label = tk.Label(root, text=f"Camera Setup:\n http://{ip_address}:5000", font=("Arial", 18), padx=20, pady=20)
+        ip_label.pack()
 
     reboot_button = tk.Button(root, text="Reboot", font=("Arial", 16), bg="red", fg="white", command=reboot_pi)
     reboot_button.pack(pady=20)

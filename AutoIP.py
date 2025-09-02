@@ -1,10 +1,13 @@
 
+from pickle import FALSE
 from time import sleep
 import tkinter as tk
 from tkinter import messagebox
 import socket
 import os
 import sys
+
+validIP = False
 def get_local_ip():
     try:
         # Connect to a public DNS server to get the local IP
@@ -22,14 +25,19 @@ def reboot_pi():
         os.system("sudo reboot")
 
 def main():
+    global validIP
     root = tk.Tk()
     root.attributes("-fullscreen", True)
     root.title("Debug Camera Setup")
 
-    ip_address = get_local_ip()
-    if ip_address == "Unable to get IP":
-        sleep(2)
-        ip_label = tk.Label(root, text="Unable to retrieve IP address.", font=("Arial", 18), padx=20, pady=20)
+    if validIP == False:
+        ip_address = get_local_ip()
+        if ip_address == "Unable to get IP":
+            validIP = False
+            sleep(5)
+            ip_label = tk.Label(root, text="Unable to retrieve IP address.", font=("Arial", 18), padx=20, pady=20)
+        else:
+            validIP = True
 
 
     ip_label = tk.Label(root, text=f"Camera Setup:\n http://{ip_address}:5000", font=("Arial", 18), padx=20, pady=20)

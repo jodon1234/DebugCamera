@@ -183,6 +183,8 @@ def view_log():
     """, log_content=log_content)
 
 # --- Update SETUP_FORM to add a link to the log viewer ---
+#<a href="Debug_Camera_AOI.L5X" download="Debug Camera Setup (READ ME).docx">Setup Guide</a><br>
+#<a href="/home/admin/Debug_Camera_AOI.L5X" download="Debug_Camera_AOI">RSLogix AOI</a></p>
 SETUP_FORM = """
 <!DOCTYPE html>
 <html lang="en">
@@ -191,7 +193,7 @@ SETUP_FORM = """
     <title>Camera Setup</title>
     <style>
         body { background: #343635; color: #fff; font-family: Arial, sans-serif; }
-        .container { width: 600px; margin: 40px auto; background: #454545; padding: 30px; border-radius: 10px; }
+        .container { width: 600px; margin: 40px auto; background: #454545; padding: 30px; border-radius: 10px; } 
         label { display: block; margin-top: 15px; }
         input[type=text], input[type=number] { width: 95%; padding: 8px; border-radius: 5px; border: 1px solid #2e7039; background: #2e7039; color: #fff; }
         .radio-group { margin-top: 15px; }
@@ -204,6 +206,9 @@ SETUP_FORM = """
         .sysinfo table { width: 100%; color: #fff; }
         .sysinfo td { padding: 4px 8px; }
         .log-link { margin-top: 20px; display: block; color: #68da7b; text-align: right; }
+        a:link { color: #68da7b;}
+        a:visited { color: #68da7b;}
+        a:active { color: #68da7b;}
     </style>
 </head>
 <body>
@@ -211,9 +216,9 @@ SETUP_FORM = """
         <h2>Camera Setup</h2>
         <p>Please make sure the camera is connected to the Gentex Corporate network either over WIFI or Ethernet.<br>
         Refer to the Readme in the camera root directory or on the flash drive for setup guide.<br>
+        <a href="https://github.com/jodon1234/DebugCamera">GITHUB</a><br>
         FTP LOGIN USER: admin PASS: password<br>
-        <a href="https://github.com/jodon1234/DebugCamera">More Info</a> <br>
-        <b>CAM ADDRESS: {{ pi_ip }}</b></p>
+        <b>CAM ADDRESS: {{ pi_ip }}</b><br>
         <form method="post">
             <label>PLC Address</label>
             <input type="text" name="plc_addr" value="{{ plc_addr }}" required>
@@ -223,6 +228,7 @@ SETUP_FORM = """
             <input type="number" name="pre_time" value="{{ pre_time }}" min="1" required>
             <label>FPS (30 recommended, higher than 60 may cause instability)</label>
             <input type="number" name="fps" value="{{ fps }}" min="15" required>
+            <p style="color: #68da7b;"><b> Tag Tracking </b><br>
             <label>Tag 1</label>
             <input type="text" name="tag1" value="{{ tag1 }}">
             <label>Tag 2</label>
